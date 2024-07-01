@@ -7,9 +7,22 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+# Install Python executables
+install(DIRECTORY config scripts launch maps mesh urdf
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  #scripts/arm_driver.py
+  #scripts/right_arm_joint_control.py
+  
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
