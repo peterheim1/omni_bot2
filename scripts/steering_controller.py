@@ -15,7 +15,7 @@ class DriveModuleController(Node):
             self.listener_callback,
             10
         )
-        self.serial_port = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        self.serial_port = serial.Serial('/dev/steering', 115200, timeout=1)
         self.serial_lock = threading.Lock()
         self.received_values = [0.0, 0.0, 0.0, 0.0]
 
@@ -27,7 +27,7 @@ class DriveModuleController(Node):
     def listener_callback(self, msg):
         if len(msg.data) >= 4:
             # Convert radians to degrees and multiply by 10
-            data_to_send = [int(math.degrees(x) * 10) for x in msg.data[:4]]
+            data_to_send = [int(math.degrees(x) * 1) for x in msg.data[:4]]
             formatted_data = ' '.join(map(str, data_to_send)) + '\n'
             self.send_to_serial(formatted_data)
             #self.get_logger().info(f'Sent to Arduino: {formatted_data.strip()}')
