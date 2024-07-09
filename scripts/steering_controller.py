@@ -20,9 +20,9 @@ class DriveModuleController(Node):
         self.received_values = [0.0, 0.0, 0.0, 0.0]
 
         # Start a thread to continuously read from the Arduino
-        self.read_thread = threading.Thread(target=self.read_from_serial)
-        self.read_thread.daemon = True
-        self.read_thread.start()
+        #self.read_thread = threading.Thread(target=self.read_from_serial)
+        #self.read_thread.daemon = True
+        #self.read_thread.start()
 
     def listener_callback(self, msg):
         if len(msg.data) >= 4:
@@ -30,11 +30,12 @@ class DriveModuleController(Node):
             data_to_send = [int(math.degrees(x) * 1) for x in msg.data[:4]]
             formatted_data = ' '.join(map(str, data_to_send)) + '\n'
             self.send_to_serial(formatted_data)
-            #self.get_logger().info(f'Sent to Arduino: {formatted_data.strip()}')
+            self.get_logger().info(f'Sent to Arduino: {formatted_data.strip()}')
 
     def send_to_serial(self, data):
         with self.serial_lock:
             self.serial_port.write(data.encode())
+    '''        
 
     def read_from_serial(self):
         while rclpy.ok():
@@ -43,13 +44,14 @@ class DriveModuleController(Node):
                 if line:
                     try:
                         values = list(map(float, line.split()))
-                        if len(values) == 4:
+                        if len(values) == 5:
                             self.received_values = values
                             self.get_logger().info(f'Received from Arduino: {self.received_values}')
                         else:
                             self.get_logger().warn(f'Unexpected number of values: {line}')
                     except ValueError:
                         self.get_logger().warn(f'Invalid data received: {line}')
+                        '''
 
 def main(args=None):
     rclpy.init(args=args)

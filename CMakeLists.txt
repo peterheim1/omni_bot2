@@ -18,7 +18,7 @@ install(DIRECTORY config scripts launch maps mesh urdf
 )
 
 install(PROGRAMS
-  #scripts/arm_driver.py
+  scripts/controller.py
   #scripts/right_arm_joint_control.py
   
   DESTINATION lib/${PROJECT_NAME}
