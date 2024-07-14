@@ -23,7 +23,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     joy_config_path = PathJoinSubstitution(
-        [FindPackageShare("omni_bot"), "config", "joy.yaml"]
+        [FindPackageShare("omni_bot2"), "config", "joy.yaml"]
     )
 
     return LaunchDescription([

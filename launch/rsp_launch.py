@@ -28,9 +28,9 @@ from launch.substitutions import Command, LaunchConfiguration
 def generate_launch_description():
 
 
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     
-    suitee_xacro = os.path.join(get_package_share_directory('omni_bot'), 'urdf', 'simple.urdf.xacro')
+    suitee_xacro = os.path.join(get_package_share_directory('omni_bot2'), 'urdf', 'base.xacro')
     
     declare_use_sim_time_argument = DeclareLaunchArgument(
         'use_sim_time',

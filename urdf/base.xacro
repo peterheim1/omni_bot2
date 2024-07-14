@@ -13,7 +13,7 @@
 
     <!-- Chassis dimensions -->
     <xacro:property name="chassis_mass" value="1.0" /> <!-- arbitrary value for base mass -->
-    <xacro:property name="chassis_length" value="0.45" />
+    <xacro:property name="chassis_length" value="0.40" />
     <xacro:property name="chassis_width" value="0.2" />
     <xacro:property name="chassis_height" value="0.06" />
 
@@ -37,11 +37,11 @@
 
     <!-- INCLUDES -->
 
-    <xacro:include filename="$(find zinger_description)/urdf/materials.xacro" />
-    <xacro:include filename="$(find zinger_description)/urdf/macros.xacro" />
+    <xacro:include filename="$(find omni_bot2)/urdf/materials.xacro" />
+    <xacro:include filename="$(find omni_bot2)/urdf/macros.xacro" />
 
     <xacro:if value="$(arg is_simulation)">
-    <xacro:include filename="$(find zinger_description)/urdf/gazebo.xacro" />
+    <xacro:include filename="$(find omni_bot2)/urdf/gazebo.xacro" />
     </xacro:if>
 
     <!-- MODEL -->
@@ -235,7 +235,7 @@
 
     <!-- LIDAR -->
     <xacro:sensor_lidar
-        name="rplidar_front"
+        name="scanner_link"
         parent_link="chassis_link"
         chassis_top_relative_height="${0.5 * chassis_height}" />
 

@@ -19,7 +19,9 @@ install(DIRECTORY config scripts launch maps mesh urdf
 
 install(PROGRAMS
   scripts/controller.py
-  #scripts/right_arm_joint_control.py
+  scripts/move_robot.py
+  scripts/old_controller.py
+  scripts/odom.py
   
   DESTINATION lib/${PROJECT_NAME}
 )

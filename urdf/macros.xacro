@@ -229,11 +229,11 @@
 
         <joint name="joint_body_to_sensor_lidar_${name}" type="fixed">
             <parent link="${parent_link}"/>
-            <child link="link_sensor_lidar_${name}"/>
+            <child link="scanner_link"/>
             <origin rpy="0 0 0" xyz="${collision_x_offset} ${collision_y_offset} ${collision_z_offset}"/>
         </joint>
 
-        <link name="link_sensor_lidar_${name}">
+        <link name="scanner_link">
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0 ${0.5 * length_z}"/>
                 <geometry>
