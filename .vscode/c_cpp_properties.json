@@ -1,0 +1,43 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/pi/ros2_ws/install/stereo_image_proc/include/**",
+        "/home/pi/ros2_ws/install/image_proc/include/**",
+        "/home/pi/ros2_ws/install/tracetools_image_pipeline/include/**",
+        "/home/pi/ros2_ws/install/rplidar_ros/include/**",
+        "/home/pi/ros2_ws/install/robbie_msg/include/**",
+        "/home/pi/ros2_ws/install/image_view/include/**",
+        "/home/pi/ros2_ws/install/image_rotate/include/**",
+        "/home/pi/ros2_ws/install/image_publisher/include/**",
+        "/home/pi/ros2_ws/install/dynamixel_hardware/include/**",
+        "/home/pi/ros2_ws/install/depth_image_proc/include/**",
+        "/home/pi/ros2_ws/install/arduino_hardware/include/**",
+        "/home/pi/robbie_ws/install/robbie_msg/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/pi/ros2_ws/src/dynamixel_control/dynamixel_hardware/include/**",
+        "/home/pi/ros2_ws/src/gizmo_navigation/include/**",
+        "/home/pi/ros2_ws/src/image_pipeline/depth_image_proc/include/**",
+        "/home/pi/ros2_ws/src/image_pipeline/image_proc/include/**",
+        "/home/pi/ros2_ws/src/image_pipeline/image_publisher/include/**",
+        "/home/pi/ros2_ws/src/image_pipeline/image_rotate/include/**",
+        "/home/pi/ros2_ws/src/image_pipeline/image_view/include/**",
+        "/home/pi/ros2_ws/src/image_pipeline/stereo_image_proc/include/**",
+        "/home/pi/ros2_ws/src/image_pipeline/tracetools_image_pipeline/include/**",
+        "/home/pi/ros2_ws/src/robbie_msg/include/**",
+        "/home/pi/ros2_ws/src/rplidar_ros2/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

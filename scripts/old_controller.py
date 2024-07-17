@@ -127,6 +127,11 @@ class MinimalPublisher(Node):
             v3 = float(int(lineParts[7]) *0.001)
             v4 = float(int(lineParts[8]) *0.001)
 
+            v1 =v1 * 1.01
+            v2 =v2 * 1.01
+            v3 =v3 * 1.01
+            v4 =v4 * 1.01
+
             msg = JointState()
             msg.header.stamp = self.get_clock().now().to_msg()
             msg.name = [

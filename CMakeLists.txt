@@ -22,6 +22,7 @@ install(PROGRAMS
   scripts/move_robot.py
   scripts/old_controller.py
   scripts/odom.py
+  scripts/odom_50hz.py
   
   DESTINATION lib/${PROJECT_NAME}
 )

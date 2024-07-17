@@ -28,12 +28,19 @@ class OdometryNode(Node):
         self.odom_publisher = self.create_publisher(Odometry, 'odom', 10)
         self.odom_broadcaster = TransformBroadcaster(self)
 
-        self.wheel_track = 0.238  # Distance between left and right wheels
-        self.wheel_base = 0.238  # Distance between front and rear wheels (modify as needed)
+        self.wheel_track = 0.2375  # Distance between left and right wheels
+        self.wheel_base = 0.2375  # Distance between front and rear wheels (modify as needed)
+
+        # Create a timer to publish odometry at 50 Hz
+        self.timer = self.create_timer(1.0 / 50.0, self.publish_odometry)
+
+        self.vx = 0.0
+        self.vy = 0.0
+        self.vth = 0.0
+        self.current_time = self.last_time
 
     def joint_state_callback(self, msg):
         #self.get_logger().info("Received JointState message")
-        current_time = self.get_clock().now()
 
         try:
             wheel_positions = msg.position[:4]
@@ -59,64 +66,67 @@ class OdometryNode(Node):
             v_rr = [rr_speed * cos(rr_angle), rr_speed * sin(rr_angle)]
 
             # Calculate the average linear velocity in the x and y directions
-            vx = (v_fl[0] + v_fr[0] + v_rl[0] + v_rr[0]) / 4.0
-            vy = (v_fl[1] + v_fr[1] + v_rl[1] + v_rr[1]) / 4.0
+            self.vx = (v_fl[0] + v_fr[0] + v_rl[0] + v_rr[0]) / 4.0
+            self.vy = (v_fl[1] + v_fr[1] + v_rl[1] + v_rr[1]) / 4.0
 
             # Calculate the rotational velocity vth (with sign inversion)
-            vth = -((v_fr[1] - v_rr[1]) - (v_fl[1] - v_rl[1])) / (2.0 * self.wheel_track)
+            self.vth = -((v_fr[1] - v_rr[1]) - (v_fl[1] - v_rl[1])) / (2.0 * self.wheel_track)
 
-            #self.get_logger().info(f"Calculated velocities: vx={vx:.2f}, vy={vy:.2f}, vth={vth:.2f}")
+            #self.get_logger().info(f"Calculated velocities: vx={self.vx:.2f}, vy={self.vy:.2f}, vth={self.vth:.2f}")
 
-            # Update odometry
-            dt = (current_time - self.last_time).nanoseconds / 1e9
-            self.last_time = current_time
-
-            # Apply coordinate transformation
-            delta_x = (vx * cos(self.th) - vy * sin(self.th)) * dt
-            delta_y = (vx * sin(self.th) + vy * cos(self.th)) * dt
-            delta_th = vth * dt
-
-            self.x += delta_x
-            self.y += delta_y
-            self.th += delta_th
-
-            # Debug message for current position
-            #self.get_logger().info(f"Current position: x={self.x:.2f}, y={self.y:.2f}, th={degrees(self.th):.2f}°")
-
-            # Create odometry quaternion
-            odom_quat = Quaternion()
-            odom_quat.z = sin(self.th / 2.0)
-            odom_quat.w = cos(self.th / 2.0)
-
-            # Publish odometry transform
-            odom_trans = TransformStamped()
-            odom_trans.header.stamp = current_time.to_msg()
-            odom_trans.header.frame_id = 'odom'
-            odom_trans.child_frame_id = 'base_link'
-            odom_trans.transform.translation.x = float(self.x)
-            odom_trans.transform.translation.y = float(self.y)
-            odom_trans.transform.translation.z = 0.0
-            odom_trans.transform.rotation = odom_quat
-
-            self.odom_broadcaster.sendTransform(odom_trans)
-
-            # Publish odometry message
-            odom = Odometry()
-            odom.header.stamp = current_time.to_msg()
-            odom.header.frame_id = 'odom'
-            odom.pose.pose.position.x = float(self.x)
-            odom.pose.pose.position.y = float(self.y)
-            odom.pose.pose.position.z = 0.0
-            odom.pose.pose.orientation = odom_quat
-            odom.child_frame_id = 'base_link'
-            odom.twist.twist.linear.x = float(vx)
-            odom.twist.twist.linear.y = float(vy)
-            odom.twist.twist.angular.z = float(vth)
-
-            self.odom_publisher.publish(odom)
+            self.current_time = self.get_clock().now()
 
         except Exception as e:
             self.get_logger().error(f"Error processing joint states: {e}")
+
+    def publish_odometry(self):
+        # Update odometry
+        dt = (self.current_time - self.last_time).nanoseconds / 1e9
+        self.last_time = self.current_time
+
+        # Apply coordinate transformation
+        delta_x = (self.vx * cos(self.th) - self.vy * sin(self.th)) * dt
+        delta_y = (self.vx * sin(self.th) + self.vy * cos(self.th)) * dt
+        delta_th = self.vth * dt
+
+        self.x += delta_x
+        self.y += delta_y
+        self.th += delta_th
+
+        # Debug message for current position
+        #self.get_logger().info(f"Current position: x={self.x:.2f}, y={self.y:.2f}, th={degrees(self.th):.2f}°")
+
+        # Create odometry quaternion
+        odom_quat = Quaternion()
+        odom_quat.z = sin(self.th / 2.0)
+        odom_quat.w = cos(self.th / 2.0)
+
+        # Publish odometry transform
+        odom_trans = TransformStamped()
+        odom_trans.header.stamp = self.current_time.to_msg()
+        odom_trans.header.frame_id = 'odom'
+        odom_trans.child_frame_id = 'base_link'
+        odom_trans.transform.translation.x = float(self.x)
+        odom_trans.transform.translation.y = float(self.y)
+        odom_trans.transform.translation.z = 0.0
+        odom_trans.transform.rotation = odom_quat
+
+        self.odom_broadcaster.sendTransform(odom_trans)
+
+        # Publish odometry message
+        odom = Odometry()
+        odom.header.stamp = self.current_time.to_msg()
+        odom.header.frame_id = 'odom'
+        odom.pose.pose.position.x = float(self.x)
+        odom.pose.pose.position.y = float(self.y)
+        odom.pose.pose.position.z = 0.0
+        odom.pose.pose.orientation = odom_quat
+        odom.child_frame_id = 'base_link'
+        odom.twist.twist.linear.x = float(self.vx)
+        odom.twist.twist.linear.y = float(self.vy)
+        odom.twist.twist.angular.z = float(self.vth)
+
+        self.odom_publisher.publish(odom)
 
 def main(args=None):
     rclpy.init(args=args)

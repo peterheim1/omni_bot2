@@ -48,6 +48,17 @@ def generate_launch_description():
         executable='async_slam_toolbox_node',
         name='slam_toolbox',
         output='screen')
+    
+    map_server_node = Node(
+        parameters=[
+          actual_params_file,
+          {'use_sim_time': use_sim_time}
+        ],
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen')
+            
 
     ld = LaunchDescription()
 
@@ -55,5 +66,6 @@ def generate_launch_description():
     ld.add_action(declare_params_file_cmd)
     ld.add_action(log_param_change)
     ld.add_action(start_async_slam_toolbox_node)
+    ld.add_action(map_server_node)
 
     return ld

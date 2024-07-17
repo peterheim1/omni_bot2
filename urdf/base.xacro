@@ -237,7 +237,7 @@
     <xacro:sensor_lidar
         name="scanner_link"
         parent_link="chassis_link"
-        chassis_top_relative_height="${0.5 * chassis_height}" />
+        chassis_top_relative_height="0.1" />
 
     <!-- Bump -->
 

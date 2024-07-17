@@ -64,8 +64,7 @@ def generate_launch_description():
 
          Node(
             package='omni_bot2',
-            #namespace='robbie',
-            executable='odom.py',
+            executable='odom_50hz.py',
             name='odom_driver',
             output='screen'),   
            
