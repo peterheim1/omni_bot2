@@ -105,7 +105,7 @@ class OdometryNode(Node):
         odom_trans = TransformStamped()
         odom_trans.header.stamp = self.current_time.to_msg()
         odom_trans.header.frame_id = 'odom'
-        odom_trans.child_frame_id = 'base_link'
+        odom_trans.child_frame_id = 'base_footprint'
         odom_trans.transform.translation.x = float(self.x)
         odom_trans.transform.translation.y = float(self.y)
         odom_trans.transform.translation.z = 0.0
@@ -121,7 +121,7 @@ class OdometryNode(Node):
         odom.pose.pose.position.y = float(self.y)
         odom.pose.pose.position.z = 0.0
         odom.pose.pose.orientation = odom_quat
-        odom.child_frame_id = 'base_link'
+        odom.child_frame_id = 'base_footprint'
         odom.twist.twist.linear.x = float(self.vx)
         odom.twist.twist.linear.y = float(self.vy)
         odom.twist.twist.angular.z = float(self.vth)

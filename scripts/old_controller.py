@@ -54,6 +54,7 @@ class MinimalPublisher(Node):
         self.subscription = self.create_subscription(Twist,'cmd_vel', self._HandleVelocityCommand,10)
         self.subscription  # prevent unused variable warning
         self.srv = self.create_service(Empty, 'autodock', self.AutoDock_callback)
+        self.srv = self.create_service(Empty, 'cal', self.Calibrate_callback)
         
         now = Node.get_clock(self).now()   
         #self.then = self.now # time for determining dx/dy
@@ -294,6 +295,13 @@ class MinimalPublisher(Node):
     def AutoDock_callback(self, request, responce):
         responce
         message = 'a \r' 
+        self.get_logger().info("Sending auto dock message: " + message)
+        self._WriteSerial(message)
+        return responce
+    
+    def Calibrate_callback(self, request, responce):
+        responce
+        message = 'c \r' 
         self.get_logger().info("Sending auto dock message: " + message)
         self._WriteSerial(message)
         return responce

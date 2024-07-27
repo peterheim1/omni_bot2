@@ -23,6 +23,7 @@ install(PROGRAMS
   scripts/old_controller.py
   scripts/odom.py
   scripts/odom_50hz.py
+  scripts/teensy_imu.py
   
   DESTINATION lib/${PROJECT_NAME}
 )

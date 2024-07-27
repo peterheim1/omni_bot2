@@ -50,7 +50,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([lidar_pkg_dir, '/rplidar.launch.py']),
         ), 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([lidar_pkg_dir, '/slam_launch.py']),
+            PythonLaunchDescriptionSource([lidar_pkg_dir, '/localization_launch.py']),
         ), 
         #IncludeLaunchDescription(
             #PythonLaunchDescriptionSource([lidar_pkg_dir, '/navigation_launch.py']),

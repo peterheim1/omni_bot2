@@ -22,7 +22,7 @@ def generate_launch_description():
     nav2_params_arg = DeclareLaunchArgument(
         'params_file',
         default_value=PathJoinSubstitution(
-            [pkg_zinger_nav, 'config', 'nav2_mppi.yaml']),
+            [pkg_zinger_nav, 'config', 'nav2_params.yaml']),
         description='Nav2 parameters')
 
     namespace_arg = DeclareLaunchArgument(

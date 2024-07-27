@@ -45,6 +45,7 @@ unsigned long previousMillis = 0;
 const long interval = 100;
 unsigned long lastActiveMillis = 0;
 const long idleTime = 2000; // 2 seconds of idle time
+float voltage = 0;
 
 // I2C transmission variables
 byte a1 = 0;
@@ -98,6 +99,8 @@ void setup() {
   stepper1.setRampLen(50);
   stepper2.setRampLen(50);
   stepper3.setRampLen(50);
+  //analogReference(AR_INTERNAL);
+  
 }
 
 void loop() {
@@ -117,7 +120,7 @@ void loop() {
     currentPos2 = -currentPos2;
     TCA9548(I2CC);
     currentPos3 = (stpC.rawAngle() * AS5600_RAW_TO_DEGREES) - (180 - 1);
-
+    voltage = analogRead(A0);
     
     v0 = RequestData(5);
     v1 = RequestData(7);
@@ -290,6 +293,12 @@ void ser_print() {
   Serial.print("\t");
   Serial.print(stepper3.currentPosition());
   Serial.print('\t');
+  Serial.print("\n");
+  
+  Serial.print("b");
+  Serial.print("\t");
+  Serial.print(voltage);
+  Serial.print("\t");
   Serial.print("\n");
 }
 void calibrateMotors() {
