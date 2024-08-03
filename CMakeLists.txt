@@ -24,6 +24,7 @@ install(PROGRAMS
   scripts/odom.py
   scripts/odom_50hz.py
   scripts/teensy_imu.py
+  scripts/odom_v2.py
   
   DESTINATION lib/${PROJECT_NAME}
 )

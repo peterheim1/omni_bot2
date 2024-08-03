@@ -182,13 +182,13 @@
         <xacro:property name="collision_y_offset" value="0.005" />
         <xacro:property name="collision_z_offset" value="${0.5 * length_z}" />
 
-        <joint name="joint_body_to_sensor_imu_${name}" type="fixed">
+        <joint name="joint_imu_${name}" type="fixed">
             <xacro:insert_block name="origin"/>
             <parent link="${parent_link}"/>
-            <child link="link_sensor_imu_${name}"/>
+            <child link="link_${name}"/>
         </joint>
 
-        <link name="link_sensor_imu_${name}">
+        <link name="link_${name}">
             <visual>
                 <origin xyz="${collision_x_offset} ${collision_y_offset} ${collision_z_offset}"/>
                 <geometry>
@@ -230,18 +230,67 @@
         <joint name="joint_body_to_sensor_lidar_${name}" type="fixed">
             <parent link="${parent_link}"/>
             <child link="scanner_link"/>
-            <origin rpy="0 0 0" xyz="${collision_x_offset} ${collision_y_offset} ${collision_z_offset}"/>
+            <origin rpy="0 0 0" xyz="0.14 0 ${chassis_top_relative_height}"/>
         </joint>
 
         <link name="scanner_link">
             <visual>
-                <origin rpy="0 0 0" xyz="0.0 0 {0.5 * length_z}"/>
+                <origin rpy="0 0 0" xyz="0.0 0 0"/>
                 <geometry>
                     <box size="${length_x} ${length_y} ${length_z}"/>
                 </geometry>
+                <material name="blue"/>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="0.0 0 ${0.5 * length_z}"/>
+                <origin rpy="0 0 0" xyz="0.0 0 0"/>
+                <geometry>
+                    <box size="${length_x} ${length_y} ${length_z}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="${mass}" />
+                <origin rpy="0 0 0" xyz="0.0 0 0"/>
+                <inertia
+                    ixx="${(1/12) * mass * (length_y*length_y + length_z*length_z)}"
+                    ixy="0.0"
+                    ixz="0.0"
+                    iyy="${(1/12) * mass * (length_x*length_x + length_z*length_z)}"
+                    iyz="0.0"
+                    izz="${(1/12) * mass * (length_x*length_x + length_y*length_y)}" />
+            </inertial>
+        </link>
+    </xacro:macro>
+
+
+
+    <!-- camera -->
+    <xacro:macro name="camera" params="name parent_link chassis_top_relative_height">
+
+        <xacro:property name="mass"     value="0.17"/>
+        <xacro:property name="length_x" value="0.01" />
+        <xacro:property name="length_y" value="0.01" />
+        <xacro:property name="length_z" value="0.01" />
+
+        <xacro:property name="collision_x_offset" value="-0.07" />
+        <xacro:property name="collision_y_offset" value="-0.2" />
+        <xacro:property name="collision_z_offset" value="${chassis_top_relative_height}" />
+
+        <joint name="joint_${name}" type="fixed">
+            <parent link="${parent_link}"/>
+            <child link="${name}"/>
+            <origin rpy="0 0 0" xyz="${collision_x_offset} ${collision_y_offset} ${collision_z_offset}"/>
+        </joint>
+
+        <link name="${name}">
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0 0"/>
+                <geometry>
+                    <box size="${length_x} ${length_y} ${length_z}"/>
+                </geometry>
+                <material name="silver"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0 0"/>
                 <geometry>
                     <box size="${length_x} ${length_y} ${length_z}"/>
                 </geometry>
@@ -259,11 +308,6 @@
             </inertial>
         </link>
     </xacro:macro>
-
-
-
-    <!-- Bump sensor -->
-
     <!-- Sonar sensor -->
 
     <!-- IR sensor -->

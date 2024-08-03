@@ -103,8 +103,8 @@ class MinimalPublisher(Node):
         #self.get_logger().info(lineParts[1])
         partsCount = len(lineParts)
         #self.get_logger().info(str(partsCount))
-        volt = float(lineParts[1])
-        per = int((volt / 13.4) * 100)
+        volt = float(lineParts[1])/20.7
+        per = int((volt / 20.7) * 100)
         msg = Float32()
         msg.data = volt
         #msg.header.stamp = Node.get_clock(self).now().to_msg()

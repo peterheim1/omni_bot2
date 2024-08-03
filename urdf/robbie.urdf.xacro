@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot name="robbie" xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:arg name="use_nominal_extrinsics" default="false"/>
+  <xacro:arg name="add_plug" default="false" />
+  <xacro:arg name="use_mesh" default="true" />
+  
+  <xacro:include filename="$(find omni_bot2)/urdf/hardware.xacro" />
+  <xacro:include filename="$(find omni_bot2)/urdf/materials.xacro" />
+  
+  
+
+
+<xacro:my_box name="base_footprint" lwh="0.1 0.1 0.005" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	        <xacro:grey2 />
+        </xacro:my_box>
+
+  <link name="base_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:yellow2/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+
+<link name="scanner_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:black/>
+      <origin rpy="0 0 0" xyz="0 -0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+
+  <joint name="base_footprint" type="fixed">
+    	<parent link="base_footprint" />
+    	<child link="base_link" />
+    	<origin xyz="0. 0 0.07" rpy="0 0 0" />
+	</joint>
+
+
+
+<joint name="scanner_link" type="fixed">
+    	<parent link="base_link" />
+    	<child link="scanner_link" />
+    	<origin xyz="0.18 0 0.31" rpy="0 0 0" />
+	</joint> 
+
+   </robot> 

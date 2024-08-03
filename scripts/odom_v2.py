@@ -6,7 +6,8 @@ from sensor_msgs.msg import JointState
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Quaternion, TransformStamped
 from tf2_ros import TransformBroadcaster
-from math import sin, cos, atan2, sqrt, pi, radians, degrees
+from std_msgs.msg import String, Float32
+from math import sin, cos, pi, radians
 
 class OdometryNode(Node):
 
@@ -38,6 +39,21 @@ class OdometryNode(Node):
         self.vy = 0.0
         self.vth = 0.0
         self.current_time = self.last_time
+
+        self.heading_subscriber = self.create_subscription(Float32, 'heading', self.heading_callback, 10)
+        self.imu_heading = None
+
+    def normalize_angle(self, angle_in_radians: float) -> float:
+        # reduce the angle to [-2pi, 2pi]
+        angle = angle_in_radians % (2 * pi)
+
+        # Force the angle to the between 0 and 2pi
+        angle = (angle + 2 * pi) % (2 * pi)
+
+        if angle > pi:
+            angle -= 2 * pi
+
+        return angle
 
     def joint_state_callback(self, msg):
         #self.get_logger().info("Received JointState message")
@@ -79,6 +95,9 @@ class OdometryNode(Node):
         except Exception as e:
             self.get_logger().error(f"Error processing joint states: {e}")
 
+    def heading_callback(self, msg):
+        self.imu_heading = radians(msg.data)
+
     def publish_odometry(self):
         # Update odometry
         dt = (self.current_time - self.last_time).nanoseconds / 1e9
@@ -91,10 +110,16 @@ class OdometryNode(Node):
 
         self.x += delta_x
         self.y += delta_y
-        self.th += delta_th
+
+        # Use the IMU heading if available to update th
+        if self.imu_heading is not None:
+            self.th = self.normalize_angle(self.imu_heading)
+        else:
+            self.th += delta_th
+            self.th = self.normalize_angle(self.th)
 
         # Debug message for current position
-        self.get_logger().info(f"Current position: x={self.x:.2f}, y={self.y:.2f}, th={degrees(self.th):.2f}°")
+        #self.get_logger().info(f"Current position: x={self.x:.2f}, y={self.y:.2f}, th={degrees(self.th):.2f}°")
 
         # Create odometry quaternion
         odom_quat = Quaternion()

@@ -16,8 +16,8 @@ from launch_ros.actions import Node
 def generate_launch_description():
     
 
-    lidar_pkg_dir = LaunchConfiguration(
-        'lidar_pkg_dir',
+    robot_pkg_dir = LaunchConfiguration(
+        'robot_pkg_dir',
         default=os.path.join(get_package_share_directory('omni_bot2'), 'launch'))
         
     #rs_cam_pkg_dir = LaunchConfiguration(
@@ -35,25 +35,27 @@ def generate_launch_description():
         
 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([lidar_pkg_dir, '/joy_teleop.launch.py']),
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/joy_teleop.launch.py']),
         ),
-
-        #IncludeLaunchDescription(
-            #PythonLaunchDescriptionSource([lidar_pkg_dir, '/robbie_robot.launch.py']),
-        #),
         
+        #IncludeLaunchDescription(
+            #PythonLaunchDescriptionSource([robot_pkg_dir, '/rear_cam_launch.py']),
+        #),
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([lidar_pkg_dir, '/rsp_launch.py']),
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/rs_launch.py']),
+        ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/rsp_launch.py']),
         ),        
 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([lidar_pkg_dir, '/rplidar.launch.py']),
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/rplidar.launch.py']),
         ), 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([lidar_pkg_dir, '/localization_launch.py']),
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/localization_launch.py']),
         ), 
         #IncludeLaunchDescription(
-            #PythonLaunchDescriptionSource([lidar_pkg_dir, '/navigation_launch.py']),
+            #PythonLaunchDescriptionSource([robot_pkg_dir, '/navigation_launch.py']),
         #),
         Node(
             package='omni_bot2',
@@ -64,8 +66,14 @@ def generate_launch_description():
 
          Node(
             package='omni_bot2',
-            executable='odom_50hz.py',
-            name='odom_driver',
+            executable='odom_v2.py',
+            name='odom_publisher',
             output='screen'),   
+
+        Node(
+            package='omni_bot2',
+            executable='teensy_imu.py',
+            name='imu_publisher',
+            output='screen'),     
            
     ])
