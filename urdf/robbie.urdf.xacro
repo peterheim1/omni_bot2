@@ -4,7 +4,7 @@
   <xacro:arg name="use_nominal_extrinsics" default="false"/>
   <xacro:arg name="add_plug" default="false" />
   <xacro:arg name="use_mesh" default="true" />
-  
+  <xacro:property name="M_PI" value="3.1415926535897931" />
   <xacro:include filename="$(find omni_bot2)/urdf/hardware.xacro" />
   <xacro:include filename="$(find omni_bot2)/urdf/materials.xacro" />
   
@@ -18,7 +18,7 @@
   <link name="base_link" >
    <visual>
       <geometry>
-        <mesh filename="package://omni_bot2/mesh/base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+        <mesh filename="package://omni_bot2/mesh/omni_v2_base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
       </geometry>
          <xacro:yellow2/>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -26,7 +26,7 @@
    <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://omni_bot2/mesh/base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          <mesh filename="package://omni_bot2/mesh/omni_v2_base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
           </geometry>
       </collision>
   </link>
@@ -34,15 +34,47 @@
 <link name="scanner_link" >
    <visual>
       <geometry>
-        <mesh filename="package://omni_bot/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+        <mesh filename="package://omni_bot2/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
       </geometry>
-         <xacro:black/>
+         <xacro:grey2/>
       <origin rpy="0 0 0" xyz="0 -0 0"/>
     </visual>
    <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
           <mesh filename="package://omni_bot2/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="rear_camera_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="${M_PI/2} 0 -${M_PI/2}" xyz="0 -0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="front_camera_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="1.57 0 1.57" xyz="0 -0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="1.57 0 1.57" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
           </geometry>
       </collision>
   </link>
@@ -58,7 +90,18 @@
 <joint name="scanner_link" type="fixed">
     	<parent link="base_link" />
     	<child link="scanner_link" />
-    	<origin xyz="0.18 0 0.31" rpy="0 0 0" />
+    	<origin xyz="0.15 0 0.32" rpy="0 0 0" />
 	</joint> 
-
+	
+<joint name="front_camera_link" type="fixed">
+    	<parent link="base_link" />
+    	<child link="front_camera_link" />
+    	<origin xyz="0.0 0 0.35" rpy="0 0 0" />
+	</joint> 	
+	
+<joint name="rear_camera_link" type="fixed">
+    	<parent link="base_link" />
+    	<child link="rear_camera_link" />
+    	<origin xyz="-0.10 0 0.35" rpy="0 0 0" />
+	</joint> 
    </robot> 

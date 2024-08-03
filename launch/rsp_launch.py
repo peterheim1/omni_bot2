@@ -30,7 +30,7 @@ def generate_launch_description():
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     
-    suitee_xacro = os.path.join(get_package_share_directory('omni_bot2'), 'urdf', 'base.xacro')
+    suitee_xacro = os.path.join(get_package_share_directory('omni_bot2'), 'urdf', 'robbie.urdf.xacro')
     
     declare_use_sim_time_argument = DeclareLaunchArgument(
         'use_sim_time',
