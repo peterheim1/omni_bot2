@@ -21,6 +21,7 @@ install(PROGRAMS
   scripts/controller.py
   scripts/move_robot.py
   scripts/old_controller.py
+  scripts/new_controller.py
   scripts/odom.py
   scripts/odom_50hz.py
   scripts/teensy_imu.py

@@ -69,7 +69,7 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 controller_server:
   ros__parameters:
     use_sim_time: false
-    controller_frequency: 20.0
+    controller_frequency: 30.0
     FollowPath:
       plugin: "nav2_rotation_shim_controller::RotationShimController"
       primary_controller: "nav2_mppi_controller::MPPIController"
@@ -77,8 +77,8 @@ controller_server:
       # Rotation shim controller
       angular_dist_threshold: 0.785
       forward_sampling_distance: 0.5
-      rotate_to_heading_angular_vel: 0.1
-      max_angular_accel: 10.0
+      rotate_to_heading_angular_vel: 1.8
+      max_angular_accel: 3.0
       simulate_ahead_time: 1.0
 
       # MPPI controller
@@ -86,17 +86,17 @@ controller_server:
       model_dt: 0.05
       batch_size: 2000
       vx_std: 0.2
-      vy_std: 0.2
+      vy_std: 0.09
       wz_std: 0.4
-      vx_max: 0.3
-      vx_min: -0.3
-      vy_max: 0.3
+      vx_max: 0.2
+      vx_min: -0.2
+      vy_max: 0.09
       wz_max: 0.2
       iteration_count: 1
       prune_distance: 1.7
       transform_tolerance: 0.1
       temperature: 0.3
-      gamma: 0.015
+      gamma: 0.1
       motion_model: "Omni"
       visualize: False
       reset_period: 1.0 # (only in Humble)
@@ -104,7 +104,7 @@ controller_server:
       TrajectoryVisualizer:
         trajectory_step: 5
         time_step: 3
-      critics: ["ConstraintCritic", "ObstaclesCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
+      critics: ["ConstraintCritic", "ObstaclesCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic","TwirlingCritic"]
       ConstraintCritic:
         enabled: true
         cost_power: 1
@@ -113,7 +113,7 @@ controller_server:
         enabled: true
         cost_power: 1
         cost_weight: 5.0
-        threshold_to_consider: 1.4
+        threshold_to_consider: 1.0
       GoalAngleCritic:
         enabled: true
         cost_power: 1
@@ -122,46 +122,46 @@ controller_server:
       PreferForwardCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 5.0
+        cost_weight: 20.0
         threshold_to_consider: 0.5
       ObstaclesCritic:
         enabled: true
         cost_power: 1
         repulsion_weight: 1.5
-        critical_weight: 20.0
+        critical_weight: 15.0
         consider_footprint: false
         collision_cost: 10000.0
         collision_margin_distance: 0.1
         near_goal_distance: 0.5
-        inflation_radius: 0.55 # (only in Humble)
+        inflation_radius: 0.35 # (only in Humble)
         cost_scaling_factor: 10.0 # (only in Humble)
       PathAlignCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 14.0
+        cost_weight: 10.0
         max_path_occupancy_ratio: 0.05
         trajectory_point_step: 3
         threshold_to_consider: 0.5
         offset_from_furthest: 20
-        use_path_orientations: false
+        use_path_orientations: True
       PathFollowCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 5.0
+        cost_weight: 12.0
         offset_from_furthest: 5
         threshold_to_consider: 1.4
       PathAngleCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 2.0
+        cost_weight: 12.0
         offset_from_furthest: 4
         threshold_to_consider: 0.5
         max_angle_to_furthest: 1.0
         mode: 0
-      # TwirlingCritic:
-      #   enabled: true
-      #   twirling_cost_power: 1
-      #   twirling_cost_weight: 10.0
+      TwirlingCritic:
+        enabled: true
+        twirling_cost_power: 1
+        twirling_cost_weight: 10.0
 
 local_costmap:
   local_costmap:
@@ -174,13 +174,13 @@ local_costmap:
       rolling_window: true
       width: 3
       height: 3
-      resolution: 0.1
+      resolution: 0.05
       footprint: "[ [0.23, 0.22], [0.23, -0.22], [-0.23, -0.22], [-0.23, 0.22] ]"
       plugins: ["static_layer", "voxel_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 5.0
-        inflation_radius: 0.2
+        cost_scaling_factor: 10.0
+        inflation_radius: 0.3
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
@@ -237,19 +237,19 @@ global_costmap:
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
-        inflation_radius: 0.2
+        cost_scaling_factor: 10.0
+        inflation_radius: 0.35
       always_send_full_costmap: True
 
 planner_server:
   ros__parameters:
-    expected_planner_frequency: 20.0
+    expected_planner_frequency: 30.0
     use_sim_time: false
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: "nav2_smac_planner/SmacPlannerLattice"
       allow_unknown: true                 # Allow traveling in unknown space
-      tolerance: 0.25                     # dist-to-goal heuristic cost (distance) for valid tolerance endpoints if exact goal cannot be found.
+      tolerance: 0.15                     # dist-to-goal heuristic cost (distance) for valid tolerance endpoints if exact goal cannot be found.
       max_iterations: 1000000             # Maximum total iterations to search for before failing (in case unreachable), set to -1 to disable
       max_on_approach_iterations: 1000    # Maximum number of iterations after within tolerances to continue to try to find exact solution
       max_planning_time: 5.0              # Max time in s for planner to plan, smooth
@@ -267,7 +267,7 @@ planner_server:
       smooth_path: True                   # If true, does a simple and quick smoothing post-processing to the path
       smoother:
         max_iterations: 1000
-        w_smooth: 0.3
+        w_smooth: 0.1
         w_data: 0.2
         tolerance: 1.0e-10
         do_refinement: true
@@ -304,9 +304,9 @@ behavior_server:
     transform_tolerance: 0.1
     use_sim_time: false
     simulate_ahead_time: 2.0
-    max_rotational_vel: 0.3
+    max_rotational_vel: 0.1
     min_rotational_vel: 0.05
-    rotational_acc_lim: 6.0
+    rotational_acc_lim: 3.0
 
 robot_state_publisher:
   ros__parameters:
@@ -329,10 +329,10 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [0.15, 0.0, 0.2]
-    min_velocity: [-0.15, 0.0, -0.2]
-    max_accel: [0.3, 0.3, 6.0]
-    max_decel: [-0.3, -0.3, -6.0]
+    max_velocity: [0.15, 0.15, 0.1]
+    min_velocity: [-0.15, -0.15, -0.1]
+    max_accel: [0.3, 0.3, 3.0]
+    max_decel: [-0.3, -0.3, -3.0]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]

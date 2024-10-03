@@ -52,15 +52,14 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([robot_pkg_dir, '/rplidar.launch.py']),
         ), 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([robot_pkg_dir, '/localization_launch.py']),
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/slam_launch.py']),
         ), 
         #IncludeLaunchDescription(
             #PythonLaunchDescriptionSource([robot_pkg_dir, '/navigation_launch.py']),
         #),
         Node(
             package='omni_bot2',
-            #namespace='robbie',
-            executable='old_controller.py',
+            executable='new_controller.py',
             name='base_driver',
             output='screen'),
 

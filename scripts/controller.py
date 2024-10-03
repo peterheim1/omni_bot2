@@ -60,7 +60,7 @@ class OmniController(Node):
     def _HandleReceivedLine(self, line):
         msg = String()
         msg.data = line
-        #self.publisher_.publish(msg)
+        self.publisher_.publish(msg)
         if len(line) > 0:
             lineParts = line.split('\t')                 
             if lineParts[0] == 'a':
@@ -75,10 +75,10 @@ class OmniController(Node):
             s2 = radians(int(lineParts[2])) 
             s3 = radians(int(lineParts[3]))
             s4 = radians(int(lineParts[4])) 
-            v1 = float(int(lineParts[5]) *0.001)
-            v2 = float(int(lineParts[6]) *0.001)
-            v3 = float(int(lineParts[7]) *0.001)
-            v4 = float(int(lineParts[8]) *0.001)
+            v1 = float(int(lineParts[5]) /50)
+            v2 = float(int(lineParts[6]) /50)
+            v3 = float(int(lineParts[7]) /50)
+            v4 = float(int(lineParts[8]) /50)
 
             msg = JointState()
             msg.header.stamp = self.get_clock().now().to_msg()
@@ -120,10 +120,10 @@ class OmniController(Node):
         j4 = degrees(self.S3)
 
         with self.lock:
-            v1 = self.V0 * 30
-            v2 = self.V1 * 30
-            v3 = self.V2 * 30
-            v4 = self.V3 * 30
+            v1 = self.V0 * 1000
+            v2 = self.V1 * 1000
+            v3 = self.V2 * 1000
+            v4 = self.V3 * 1000
 
         message = 'a %d %d %d %d %d %d %d %d\r' % (j1, j2, j3, j4, v1, v2, v3, v4)
 
@@ -132,10 +132,10 @@ class OmniController(Node):
 
     def _HandleVelocity_Command(self, msg): 
         with self.lock:
-            self.V0 = msg.data[0]
-            self.V3 = msg.data[3]
-            self.V1 = msg.data[1]   
-            self.V2 = msg.data[2]
+            self.V0 = msg.data[0]*0.05
+            self.V3 = msg.data[3]*0.05
+            self.V1 = msg.data[1]*0.05  
+            self.V2 = msg.data[2]*0.05
 
     
 

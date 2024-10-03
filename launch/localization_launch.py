@@ -64,7 +64,7 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'map',
-            default_value=os.path.join(bringup_dir, 'maps', 'map_omni_9_6.yaml'),
+            default_value=os.path.join(bringup_dir, 'maps', 'map_aug_11.yaml'),
             description='Full path to map yaml file to load'),
 
         DeclareLaunchArgument(
