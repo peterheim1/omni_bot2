@@ -26,6 +26,10 @@ install(PROGRAMS
   scripts/odom_50hz.py
   scripts/teensy_imu.py
   scripts/odom_v2.py
+  scripts/dock_pose_pub.py
+  scripts/docking_controller.py
+  scripts/arm_driver.py
+  scripts/voice_serv.py
   
   DESTINATION lib/${PROJECT_NAME}
 )

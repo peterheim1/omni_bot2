@@ -20,6 +20,23 @@ def generate_launch_description():
         output='screen',
         parameters=[docking_config],
     )
+
+    docking_pose_publisher = Node(
+        package='omni_bot2',
+        executable='dock_pose_pub.py',
+        name='dock_pose_pub',
+        output='screen',
+        
+    )
+
+    docking_controller = Node(
+        package='omni_bot2',
+        executable='docking_controller.py',
+        name='docking_controller',
+        output='screen',
+        
+    )
+    
     
 
     # Define the image rectification node
@@ -27,7 +44,7 @@ def generate_launch_description():
         package='image_proc',
         plugin='image_proc::RectifyNode',
         name='rectify',
-        namespace='camera',
+        namespace='',
         remappings=[('image', '/rear_camera/color/image_raw'),
                     ('camera_info', '/rear_camera/color/camera_info')],
         extra_arguments=[{'use_intra_process_comms': True}]
@@ -71,6 +88,8 @@ def generate_launch_description():
     # Return the LaunchDescription with the RealSense node and the container
     return LaunchDescription([
         docking_server,
+        docking_pose_publisher,
+        docking_controller,
         container,
         lifecycle_manager
 

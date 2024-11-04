@@ -6,7 +6,7 @@ import time
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import JointState
+from sensor_msgs.msg import JointState, BatteryState
 from std_msgs.msg import String, Float32
 from std_srvs.srv import Empty
 from SerialDataGateway3 import SerialDataGateway  # Ensure this module is available
@@ -146,7 +146,7 @@ class MinimalPublisher(Node):
         self.get_logger().info('Starting Arduino control')                      
         self.publisher_ = self.create_publisher(String, 'base_serial', 10)
         self._JointPublisher = self.create_publisher(JointState, 'joint_states', 5) 
-        self._batteryPublisher = self.create_publisher(Float32,'battery_state', 10)                   
+        self._batteryPublisher = self.create_publisher(BatteryState,'battery_state', 10)                   
         self._SerialDataGateway = SerialDataGateway("/dev/ttyACM0", 115200,  self._HandleReceivedLine) 
         self.srv = self.create_service(Empty, 'cal', self.Calibrate_callback)  
         self.Start()
@@ -220,14 +220,28 @@ class MinimalPublisher(Node):
         #self.get_logger().info(lineParts[1])
         partsCount = len(lineParts)
         #self.get_logger().info(str(partsCount))
+
         volt = float(lineParts[1])/20.7
-        per = int((volt / 20.7) * 100)
-        msg = Float32()
-        msg.data = volt
-        #msg.header.stamp = Node.get_clock(self).now().to_msg()
-        #msg.voltage = float(lineParts[1])* 0.015867159
-        #msg.percentage = float(per)
-        self._batteryPublisher.publish(msg)
+        per = int((volt / 14.0) * 100)
+        chargeStateRaw = int(lineParts[2])  
+        if chargeStateRaw == 0:
+            chargeState = 1
+            charge = 80.0
+            current = 5.0
+        if chargeStateRaw == 1:
+            chargeState = 2
+            charge = 0.0
+            current = -0.5
+
+        msg = BatteryState()
+        #msg.data = volt
+        msg.header.stamp = Node.get_clock(self).now().to_msg()
+        msg.voltage = volt
+        msg.percentage = float(per)
+        msg.power_supply_status = chargeState
+        msg.charge = charge
+        msg.current = current
+        self._batteryPublisher.publish(msg)        
         #self.get_logger().info(str(msg))
 
     def Start(self):

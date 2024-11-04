@@ -17,6 +17,9 @@ const byte dirPinS3 = 13;
 const int stepsPerRev = 12835;
 const int stepsPerDegree = stepsPerRev / 360;
 const int maxDegrees = 135;
+const int DockPin = 10;
+int DockState = 0;
+
 
 // Define AS5600 objects
 AS5600 stpA;
@@ -64,6 +67,7 @@ int RequestData(int address);
 void setup() {
   Serial.begin(115200);
   Wire.begin();
+  pinMode(DockPin, INPUT_PULLUP);
 
   // Initialize TCA9548 and AS5600 sensors
   TCA9548(I2CB);
@@ -84,6 +88,8 @@ void setup() {
 
   _Messenger.attach(OnMessageCompleted);
   Serial.println("moba starting");
+
+
 
   // Initialize steppers
   stepper0.attach(stepPinS0, dirPinS0);
@@ -138,6 +144,7 @@ void loop() {
     //stepper3.write(S3);
 
     ser_print();
+    DockState = digitalRead(DockPin);
   }
   //if (currentMillis - lastActiveMillis > idleTime) {
     //calibrateMotors();
@@ -299,6 +306,8 @@ void ser_print() {
   Serial.print("\t");
   Serial.print(voltage);
   Serial.print("\t");
+  Serial.print(DockState);
+  Serial.print('\t');
   Serial.print("\n");
 }
 void calibrateMotors() {

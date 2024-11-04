@@ -20,9 +20,9 @@ def generate_launch_description():
         'robot_pkg_dir',
         default=os.path.join(get_package_share_directory('omni_bot2'), 'launch'))
         
-    #rs_cam_pkg_dir = LaunchConfiguration(
-        #'rs_cam_pkg_dir',
-        #default=os.path.join(get_package_share_directory('realsense2_camera'), 'launch'))
+    driver_pkg_dir = LaunchConfiguration(
+        'driver_pkg_dir',
+        default=os.path.join(get_package_share_directory('robot_control'), 'launch'))
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
@@ -54,20 +54,29 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_pkg_dir, '/slam_launch.py']),
         ), 
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([driver_pkg_dir, '/robot_control_launch.py']),
+        ), 
+
         #IncludeLaunchDescription(
-            #PythonLaunchDescriptionSource([robot_pkg_dir, '/navigation_launch.py']),
+            #PythonLaunchDescriptionSource([robot_pkg_dir, '/docking_launch.py']),
         #),
-        Node(
-            package='omni_bot2',
-            executable='new_controller.py',
-            name='base_driver',
-            output='screen'),
+
+        #Node(
+            #package='robot_control',
+            #executable='robot_contrl_node',
+            #name='base_driver_cpp',
+            #output='screen'),
 
          Node(
-            package='omni_bot2',
-            executable='odom_v2.py',
-            name='odom_publisher',
-            output='screen'),   
+            package="omni_bot",
+            executable="voice_serv.py",
+            name="voice",
+            output={
+                "stdout": "screen",              
+            },),
+                 
 
         Node(
             package='omni_bot2',
