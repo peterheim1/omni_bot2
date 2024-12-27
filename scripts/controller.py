@@ -25,7 +25,7 @@ class OmniController(Node):
         super().__init__("omni_controller")
         self._JointPublisher = self.create_publisher(JointState, 'joint_states', 5)
         self.publisher_ = self.create_publisher(String, 'base_serial', 10)
-        self._SerialDataGateway = SerialDataGateway("/dev/ttyACM0", 115200, self._HandleReceivedLine)
+        self._SerialDataGateway = SerialDataGateway("/dev/ttyUSB0", 115200, self._HandleReceivedLine)
         self.subscription_steering = self.create_subscription(Float64MultiArray, '/drive_module_steering_angle_controller/commands', self._HandleSteering_Command, 10)
         self.subscription_velocity = self.create_subscription(Float64MultiArray, '/drive_module_velocity_controller/commands', self._HandleVelocity_Command, 10)
         self.front_left_steering = 0.0   

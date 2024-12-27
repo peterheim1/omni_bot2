@@ -71,7 +71,7 @@ class CmdVelSubscriber(Node):
         V_F_R = int(round(wheel_data['S3']['velocity'] * 1000))
 
         # Create the message string
-        message = 'a %d %d %d %d %d %d %d %d\r' % (S0_angle, S1_angle, S2_angle, S3_angle, V_F_L, V_R_L, V_R_R, V_F_R)
+        message = 'a %d %d %d %d %d %d %d %d\r\n' % (S0_angle, S1_angle, S2_angle, S3_angle, V_F_L, V_R_L, V_R_R, V_F_R)
         self.get_logger().info(f"Wheel Command: {message.strip()}")  # Log without carriage return
 
         # Publish the wheel command
@@ -147,7 +147,7 @@ class MinimalPublisher(Node):
         self.publisher_ = self.create_publisher(String, 'base_serial', 10)
         self._JointPublisher = self.create_publisher(JointState, 'joint_states', 5) 
         self._batteryPublisher = self.create_publisher(BatteryState,'battery_state', 10)                   
-        self._SerialDataGateway = SerialDataGateway("/dev/ttyACM0", 115200,  self._HandleReceivedLine) 
+        self._SerialDataGateway = SerialDataGateway("/dev/ttyUSB0", 115200,  self._HandleReceivedLine) 
         self.srv = self.create_service(Empty, 'cal', self.Calibrate_callback)  
         self.Start()
 

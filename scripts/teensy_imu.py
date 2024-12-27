@@ -21,7 +21,7 @@ class MinimalPublisher(Node):
         self.get_logger().info('starting angle publisher')
          #         Internal data        
         self._anglePublisher = self.create_publisher(Float32,'heading', 10)
-        self._SerialDataGateway = SerialDataGateway("/dev/ttyACM1", 115200,  self._HandleReceivedLine)
+        self._SerialDataGateway = SerialDataGateway("/dev/ttyACM0", 115200,  self._HandleReceivedLine)
         
         self.Start()
         

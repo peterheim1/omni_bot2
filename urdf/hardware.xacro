@@ -109,7 +109,7 @@
 			<visual>
 				<origin xyz="${xyz}" rpy="${rpy}" />
 				<geometry>
-					<mesh filename="package://omni_bot/mesh/ax12.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+					<mesh filename="package://2/mesh/ax12.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
 				</geometry>
 				<xacro:ax12_color />
              </visual>
@@ -119,7 +119,7 @@
 				<geometry>
 					<!--<box size="0.032 0.038 0.05" />-->
 					
-					<mesh filename="package://omni_bot/mesh/ax12.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+					<mesh filename="package://omni_bot2/mesh/ax12.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
 					
 				</geometry>
              </collision>
@@ -133,7 +133,7 @@
 			<visual>
 				<origin xyz="${xyz}" rpy="${rpy}" />
 				<geometry>
-          			<mesh filename="package://omni_bot/mesh/F2.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          			<mesh filename="package://omni_bot2/mesh/F2.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
 				</geometry>
 				<xacro:bracket_color />
              </visual>
@@ -141,7 +141,7 @@
 				<origin xyz="${xyz}" rpy="${rpy}" />
 					<geometry>
 						
-          				<mesh filename="package://omni_bot/mesh/F2.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          				<mesh filename="package://omni_bot2/mesh/F2.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
           				
 					</geometry>
              </collision>
@@ -155,7 +155,7 @@
 			<visual>
 				<origin xyz="${xyz}" rpy="${rpy}" />
 				<geometry>
-          			<mesh filename="package://omni_bot/mesh/F3.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          			<mesh filename="package://omni_bot2/mesh/F3.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
 				</geometry><material name="grey1">
 			<color rgba="0.75 0.75 0.75 1.0"/>
 		</material>
@@ -165,7 +165,7 @@
 				<origin xyz="${xyz}" rpy="${rpy}" />
 					<geometry>
 						
-          				<mesh filename="package://omni_bot/mesh/F3.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          				<mesh filename="package://omni_bot2/mesh/F3.${MESH_EXT}" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
 						
 					</geometry>
              </collision>

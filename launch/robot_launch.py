@@ -41,9 +41,9 @@ def generate_launch_description():
         #IncludeLaunchDescription(
             #PythonLaunchDescriptionSource([robot_pkg_dir, '/rear_cam_launch.py']),
         #),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([robot_pkg_dir, '/rs_launch.py']),
-        ),
+        #IncludeLaunchDescription(
+            #PythonLaunchDescriptionSource([robot_pkg_dir, '/rs_launch.py']),
+        #),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_pkg_dir, '/rsp_launch.py']),
         ),        
@@ -51,9 +51,9 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_pkg_dir, '/rplidar.launch.py']),
         ), 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([robot_pkg_dir, '/slam_launch.py']),
-        ), 
+        #IncludeLaunchDescription(
+            #PythonLaunchDescriptionSource([robot_pkg_dir, '/slam_launch.py']),
+        #), 
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([driver_pkg_dir, '/robot_control_launch.py']),
@@ -70,7 +70,7 @@ def generate_launch_description():
             #output='screen'),
 
          Node(
-            package="omni_bot",
+            package="omni_bot2",
             executable="voice_serv.py",
             name="voice",
             output={
