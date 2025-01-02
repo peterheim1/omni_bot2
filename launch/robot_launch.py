@@ -38,9 +38,9 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([robot_pkg_dir, '/joy_teleop.launch.py']),
         ),
         
-        #IncludeLaunchDescription(
-            #PythonLaunchDescriptionSource([robot_pkg_dir, '/rear_cam_launch.py']),
-        #),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/rear_cam_launch.py']),
+        ),
         #IncludeLaunchDescription(
             #PythonLaunchDescriptionSource([robot_pkg_dir, '/rs_launch.py']),
         #),
@@ -51,9 +51,9 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_pkg_dir, '/rplidar.launch.py']),
         ), 
-        #IncludeLaunchDescription(
-            #PythonLaunchDescriptionSource([robot_pkg_dir, '/slam_launch.py']),
-        #), 
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/slam_launch.py']),
+        ), 
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([driver_pkg_dir, '/robot_control_launch.py']),

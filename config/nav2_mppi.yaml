@@ -180,7 +180,7 @@ local_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 10.0
-        inflation_radius: 0.2
+        inflation_radius: 0.25
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
@@ -238,7 +238,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 10.0
-        inflation_radius: 0.25
+        inflation_radius: 0.26
       always_send_full_costmap: True
 
 planner_server:
@@ -247,7 +247,7 @@ planner_server:
     use_sim_time: false
     planner_plugins: ["GridBased"]
     GridBased:
-      plugin: "nav2_smac_planner/SmacPlannerLattice"
+      plugin: "nav2_smac_planner::SmacPlannerLattice"
       allow_unknown: true                 # Allow traveling in unknown space
       tolerance: 0.15                     # dist-to-goal heuristic cost (distance) for valid tolerance endpoints if exact goal cannot be found.
       max_iterations: 1000000             # Maximum total iterations to search for before failing (in case unreachable), set to -1 to disable
