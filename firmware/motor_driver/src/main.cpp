@@ -5,19 +5,27 @@
 #include <TCA9548A.h>
 #include <AS5600.h>
 
-// Define stepper motor connections and parameters
-const byte stepPinS0 = 3;
-const byte dirPinS0 = 6;
-const byte stepPinS1 = 2;
-const byte dirPinS1 = 5;
-const byte stepPinS2 = 4;
-const byte dirPinS2 = 7;
-const byte stepPinS3 = 12;
-const byte dirPinS3 = 13;
+// Stepper pin configuration
+
+
+const byte dirPinS0 = 5;
+const byte stepPinS0 = 17;
+
+
+const byte dirPinS1 = 18;
+const byte stepPinS1 = 19;
+
+const byte dirPinS2 = 32;
+const byte stepPinS2 = 33;
+
+const byte dirPinS3 = 25;
+const byte stepPinS3 = 26;
+
+
 const int stepsPerRev = 12835;
 const int stepsPerDegree = stepsPerRev / 360;
 const int maxDegrees = 135;
-const int DockPin = 10;
+const int DockPin = 14;
 int DockState = 0;
 
 
@@ -41,7 +49,7 @@ MoToStepper stepper3(stepsPerRev, STEPDIR);
 int S0, S1, S2, S3;  // Target positions
 int md0, md1, md2, md3;  // Steps to move
 int e0, e1, e2, e3;  // E-stop values
-int currentPos0 = 0, currentPos1 = 0, currentPos2 = 0, currentPos3 = 0;
+float currentPos0 = 0, currentPos1 = 0, currentPos2 = 0, currentPos3 = 0;
 int v0,v1,v2,v3;
 Messenger _Messenger = Messenger();
 unsigned long previousMillis = 0;
@@ -49,6 +57,9 @@ const long interval = 100;
 unsigned long lastActiveMillis = 0;
 const long idleTime = 2000; // 2 seconds of idle time
 float voltage = 0;
+
+// I2C slave addresses
+uint8_t addresses[] = {4, 5, 6, 7};
 
 // I2C transmission variables
 byte a1 = 0;
@@ -66,7 +77,21 @@ int RequestData(int address);
 
 void setup() {
   Serial.begin(115200);
+  delay(1000);
   Wire.begin();
+  // Set stepper pins as output
+  pinMode(stepPinS0, OUTPUT);
+  pinMode(dirPinS0, OUTPUT);
+  pinMode(stepPinS1, OUTPUT);
+  pinMode(dirPinS1, OUTPUT);
+  pinMode(stepPinS2, OUTPUT);
+  pinMode(dirPinS2, OUTPUT);
+  pinMode(stepPinS3, OUTPUT);
+  pinMode(dirPinS3, OUTPUT);
+
+  pinMode(36, INPUT);
+  pinMode(12, INPUT_PULLUP);
+
   pinMode(DockPin, INPUT_PULLUP);
 
   // Initialize TCA9548 and AS5600 sensors
@@ -118,33 +143,27 @@ void loop() {
 
     // Read current positions from AS5600 sensors
     TCA9548(I2CB);
-    currentPos0 = (stpB.rawAngle() * AS5600_RAW_TO_DEGREES) - (180 - 53);
-    TCA9548(I2CD);
-    currentPos1 = (stpD.rawAngle() * AS5600_RAW_TO_DEGREES) - (180 - 97);
-    TCA9548(I2CA);
-    currentPos2 = (stpA.rawAngle() * AS5600_RAW_TO_DEGREES) - (180 + 13);
-    currentPos2 = -currentPos2;
-    TCA9548(I2CC);
-    currentPos3 = (stpC.rawAngle() * AS5600_RAW_TO_DEGREES) - (180 - 1);
-    voltage = analogRead(A0);
-    
-    v0 = RequestData(5);
-    v1 = RequestData(7);
-    v2 = RequestData(8);
-    v3 = RequestData(9);
-    // Check for motor activity
-   // if (abs(stepper0.currentPosition() - currentPos0) > 1 || abs(stepper1.currentPosition() - currentPos1) > 1 || abs(stepper2.currentPosition() - currentPos2) > 1 || abs(stepper3.currentPosition() - currentPos3) > 1) {
-      //lastActiveMillis = currentMillis;
-    //}
+    currentPos0 = (stpB.rawAngle() * AS5600_RAW_TO_DEGREES)- (129);
 
-    // Update stepper positions
-    //stepper0.write(S0);
-    //stepper1.write(S1);
-    //stepper2.write(S2);
-    //stepper3.write(S3);
+    TCA9548(I2CA);
+    currentPos1 = (stpA.rawAngle() * AS5600_RAW_TO_DEGREES)- (170);
+    //currentPos1 = currentPos1 *-1;
+
+    TCA9548(I2CD);
+    currentPos2 = (stpD.rawAngle() * AS5600_RAW_TO_DEGREES)- (176);
+
+    TCA9548(I2CC);
+    currentPos3 = (stpC.rawAngle() * AS5600_RAW_TO_DEGREES)- (175);
+    
+    v0 = RequestData(4);
+    v1 = RequestData(5);
+    v2 = RequestData(6);
+    v3 = RequestData(7);
+    
 
     ser_print();
-    DockState = digitalRead(DockPin);
+    DockState = digitalRead(12);
+    voltage = digitalRead(36);
   }
   //if (currentMillis - lastActiveMillis > idleTime) {
     //calibrateMotors();
@@ -167,6 +186,8 @@ void SetTarget(int address, int16_t target) {
   Wire.write(b1);
   Wire.endTransmission();
 }
+
+
 
 int RequestData(int address) {
   int16_t val = 0;
@@ -213,10 +234,10 @@ void OnMessageCompleted() {
     stepper2.write(S2);
     stepper3.write(S3);
 
-    SetTarget(5, e0);
-    SetTarget(7, e1);
-    SetTarget(8, e2);
-    SetTarget(9, e3);
+    SetTarget(4, e0);
+    SetTarget(5, e1);
+    SetTarget(6, e2);
+    SetTarget(7, e3);
 
     delay(10);
     lastActiveMillis = millis(); // Reset the idle timer on activity
@@ -251,10 +272,10 @@ void OnMessageCompleted() {
     stepper1.move(md1);
     stepper2.move(md2); 
     stepper3.move(md3);
-    SetTarget(5, e0);
-   SetTarget(7, e1);
-   SetTarget(8, e2);
-   SetTarget(9, e3);
+   SetTarget(4, e0);
+   SetTarget(5, e1);
+   SetTarget(6, e2);
+   SetTarget(7, e3);
     delay(10);
   } else if (_Messenger.checkString("s")) {
     S0 = _Messenger.readInt();
@@ -275,39 +296,39 @@ void OnMessageCompleted() {
 
 void ser_print() {
   Serial.print("a");
-  Serial.print("\t");
-  Serial.print(currentPos0);
-  Serial.print("\t");
-  Serial.print(currentPos1);
-  Serial.print("\t");
-  Serial.print(currentPos2);
-  Serial.print("\t");
-  Serial.print(currentPos3);
-  Serial.print("\t");
-  Serial.print(v0);
-  Serial.print("\t");
-  Serial.print(v1);
-  Serial.print("\t");
-  Serial.print(v2);
-  Serial.print("\t");
-  Serial.print(v3);
-  Serial.print("\t");
-  Serial.print(stepper0.currentPosition());
-  Serial.print("\t");
-  Serial.print(stepper1.currentPosition());
-  Serial.print("\t");
-  Serial.print(stepper2.currentPosition());
-  Serial.print("\t");
-  Serial.print(stepper3.currentPosition());
   Serial.print('\t');
-  Serial.print("\n");
+  Serial.print(currentPos0);
+  Serial.print('\t');
+  Serial.print(currentPos1);
+  Serial.print('\t');
+  Serial.print(currentPos2);
+  Serial.print('\t');
+  Serial.print(currentPos3);
+  Serial.print('\t');
+  Serial.print(v0);
+  Serial.print('\t');
+  Serial.print(v1);
+  Serial.print('\t');
+  Serial.print(v2);
+  Serial.print('\t');
+  Serial.print(v3);
+  Serial.print('\t');
+  Serial.print(stepper0.currentPosition());
+  Serial.print('\t');
+  Serial.print(stepper1.currentPosition());
+  Serial.print('\t');
+  Serial.print(stepper2.currentPosition());
+  Serial.print('\t');
+  Serial.print(stepper3.currentPosition());
+  //Serial.print('\r');
+  Serial.print("\r\n");
   
   Serial.print("b");
   Serial.print("\t");
   Serial.print(voltage);
   Serial.print("\t");
   Serial.print(DockState);
-  Serial.print('\t');
+  Serial.print('\r');
   Serial.print("\n");
 }
 void calibrateMotors() {
