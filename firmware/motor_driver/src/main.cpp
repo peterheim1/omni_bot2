@@ -89,7 +89,7 @@ void setup() {
   pinMode(stepPinS3, OUTPUT);
   pinMode(dirPinS3, OUTPUT);
 
-  pinMode(36, INPUT);
+  //pinMode(36, INPUT);
   pinMode(12, INPUT_PULLUP);
 
   pinMode(DockPin, INPUT_PULLUP);
@@ -163,7 +163,7 @@ void loop() {
 
     ser_print();
     DockState = digitalRead(12);
-    voltage = digitalRead(36);
+    voltage = analogRead(36);
   }
   //if (currentMillis - lastActiveMillis > idleTime) {
     //calibrateMotors();

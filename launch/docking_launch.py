@@ -57,8 +57,8 @@ def generate_launch_description():
         name='apriltag',
         namespace='apriltag',
         remappings=[
-            ('/apriltag/image_rect', '/rear_camera/color/image_raw'),
-            ('/apriltag/camera_info', '/rear_camera/color/camera_info')
+            ('/apriltag/image_rect', '/oak/rgb/image_raw'),
+            ('/apriltag/camera_info', '/oak/rgb/camera_info')
         ],
         parameters=[apriltag_config],
         extra_arguments=[{'use_intra_process_comms': True}]
@@ -71,7 +71,7 @@ def generate_launch_description():
         package='rclcpp_components',
         executable='component_container',
         composable_node_descriptions=[
-            rectify_node,
+            #rectify_node,
             apriltag_node
         ],
         output='screen'
@@ -87,10 +87,10 @@ def generate_launch_description():
 
     # Return the LaunchDescription with the RealSense node and the container
     return LaunchDescription([
-        docking_server,
+        #docking_server,
         docking_pose_publisher,
-        docking_controller,
+        #docking_controller,
         container,
-        lifecycle_manager
+        #lifecycle_manager
 
     ])

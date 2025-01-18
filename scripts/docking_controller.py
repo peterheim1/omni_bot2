@@ -10,7 +10,6 @@ import time
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped, Twist
 from lifecycle_msgs.srv import GetState
-from opennav_docking_msgs.action import DockRobot, UndockRobot
 from sensor_msgs.msg import Joy
 from std_srvs.srv import Empty
 import rclpy
@@ -38,14 +37,27 @@ class DockingController(Node):
         self.feedback = None
 
         # Action Clients
-        self.docking_client = ActionClient(self, DockRobot, 'dock_robot')
-        self.undocking_client = ActionClient(self, UndockRobot, 'undock_robot')
         self.navigation_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+
+
 
         # Service Client for '/cal' service
         self.cal_service_client = self.create_client(Empty, '/cal')
         while not self.cal_service_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().warn("'/cal' service not available, waiting...")
+
+        # Service Client for '/dock ' service
+        self.dock_service_client = self.create_client(Empty, 'start_docking')
+        while not self.dock_service_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("'start_docking' service not available, waiting...")
+
+        # Service Client for '/undock ' service
+        self.undock_service_client = self.create_client(Empty, 'undock')
+        while not self.undock_service_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("'undock' service not available, waiting...") 
+    
+
+
 
         # Publisher to stop the robot by publishing zero velocities
         self.cmd_vel_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
@@ -64,84 +76,52 @@ class DockingController(Node):
         self.get_logger().info('DockingController node has been initialized.')
 
     def destroy_node(self):
-        self.docking_client.destroy()
-        self.undocking_client.destroy()
+        self.dock_service_client.destroy()
+        self.undock_service_client.destroy()
         self.navigation_client.destroy()
         self.cal_service_client.destroy()
         self.cmd_vel_publisher.destroy()
         super().destroy_node()
 
     def dock_robot(self):
-        """Send a DockRobot action request."""
-        dock_pose = PoseStamped()
-        dock_pose.header.stamp = self.get_clock().now().to_msg()
-        dock_pose.header.frame_id = "base_link"
-        dock_pose.pose.position.x = 0.7  # 70 cm in front of the robot
-        dock_pose.pose.position.y = 0.0
-        dock_pose.pose.orientation.w = 1.0  # No rotation
+        """Call the '/start dock' service."""
+        if not self.dock_service_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().error("'/dock' service not available!")
+            return
 
-        self.get_logger().info(f'Docking at pose: {dock_pose}...')
+        request = Empty.Request()
+        self.get_logger().info("Calling '/start dock' service...")
 
-        while not self.docking_client.wait_for_server(timeout_sec=1.0):
-            self.get_logger().warn('"DockRobot" action server not available, waiting...')
-
-        goal_msg = DockRobot.Goal()
-        goal_msg.use_dock_id = False
-        goal_msg.dock_pose = dock_pose
-        goal_msg.dock_type = ""  # Specify if needed
-
-        send_goal_future = self.docking_client.send_goal_async(goal_msg, self.feedback_callback)
-        send_goal_future.add_done_callback(self.dock_goal_response_callback)
+        future = self.dock_service_client.call_async(request)
+        future.add_done_callback(self.dock_service_callback)
 
     def undock_robot(self):
-        """Send an UndockRobot action request."""
-        dock_type = "nova_carter_dock"  # Specify the dock type as needed
-        self.get_logger().info(f'Undocking from dock type: {dock_type}...')
-
-        while not self.undocking_client.wait_for_server(timeout_sec=1.0):
-            self.get_logger().warn('"UndockRobot" action server not available, waiting...')
-
-        goal_msg = UndockRobot.Goal()
-        goal_msg.dock_type = dock_type
-
-        send_goal_future = self.undocking_client.send_goal_async(goal_msg, self.feedback_callback)
-        send_goal_future.add_done_callback(self.undock_goal_response_callback)
-
-    def dock_goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().error('Docking request was rejected!')
+        """Call the '/undock' service."""
+        if not self.undock_service_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().error("'/undock' service not available!")
             return
 
-        self.get_logger().info('Docking request accepted.')
-        self.result_future = goal_handle.get_result_async()
-        self.result_future.add_done_callback(self.dock_result_callback)
+        request = Empty.Request()
+        self.get_logger().info("Calling '/undock' service...")
 
-    def undock_goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().error('Undocking request was rejected!')
-            return
+        future = self.undock_service_client.call_async(request)
+        future.add_done_callback(self.undock_service_callback)
 
-        self.get_logger().info('Undocking request accepted.')
-        self.result_future = goal_handle.get_result_async()
-        self.result_future.add_done_callback(self.undock_result_callback)
+    def dock_service_callback(self, future):
+        try:
+            response = future.result()
+            self.get_logger().info("'/start dock' service call succeeded.")
+        except Exception as e:
+            self.get_logger().error(f"'/start dock' service call failed: {e}")
 
-    def dock_result_callback(self, future):
-        result = future.result().result
-        status = future.result().status
-        if status == GoalStatus.STATUS_SUCCEEDED:
-            self.get_logger().info('Docking succeeded!')
-        else:
-            self.get_logger().error(f'Docking failed with status: {status}')
+    def undock_service_callback(self, future):
+        try:
+            response = future.result()
+            self.get_logger().info("'/undock' service call succeeded.")
+        except Exception as e:
+            self.get_logger().error(f"'/undock' service call failed: {e}")
 
-    def undock_result_callback(self, future):
-        result = future.result().result
-        status = future.result().status
-        if status == GoalStatus.STATUS_SUCCEEDED:
-            self.get_logger().info('Undocking succeeded!')
-        else:
-            self.get_logger().error(f'Undocking failed with status: {status}')
+    
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback

@@ -8,18 +8,12 @@ import numpy as np
 import cv2
 import tf_transformations
 from threading import Lock
-import tf2_ros
-import tf2_geometry_msgs  # Required for transforming PoseStamped messages
-from math import atan2
 
 class AprilTagPosePublisher(Node):
     def __init__(self):
         super().__init__('apriltag_pose_publisher')
 
-        # Hard-coded debug variable
-        self.debug = True  # Set to True to enable debug logs, False to disable
-
-        # Publisher for PoseStamped messages in base_link frame
+        # Publisher for PoseStamped messages
         self.pose_publisher = self.create_publisher(
             PoseStamped,
             'detected_dock_pose',
@@ -53,52 +47,20 @@ class AprilTagPosePublisher(Node):
 
         self.get_logger().info('AprilTagPosePublisher node has been started.')
 
-        # Initialize TF2 Buffer and Listener
-        self.tf_buffer = tf2_ros.Buffer()
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
-
     def multiply_quaternions(self, q1, q2):
         """
         Multiply two quaternions.
-
+        
         Args:
             q1 (list or tuple): First quaternion [x, y, z, w].
             q2 (list or tuple): Second quaternion [x, y, z, w].
-
+        
         Returns:
             list: Resulting quaternion [x, y, z, w].
         """
         return tf_transformations.quaternion_multiply(q1, q2)
 
-    def get_yaw_from_quaternion(self, orientation):
-        """
-        Convert quaternion to yaw angle.
-
-        Args:
-            orientation (geometry_msgs.msg.Quaternion): Orientation in quaternion.
-
-        Returns:
-            float: Yaw angle in radians.
-        """
-        qx = orientation.x
-        qy = orientation.y
-        qz = orientation.z
-        qw = orientation.w
-
-        # Yaw (z-axis rotation)
-        siny_cosp = 2.0 * (qw * qz + qx * qy)
-        cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz)
-        yaw = atan2(siny_cosp, cosy_cosp)
-        return yaw
-
     def camera_info_callback(self, msg: CameraInfo):
-        """
-        Callback function to handle incoming CameraInfo messages.
-        Extracts and stores the camera intrinsic parameters.
-
-        Args:
-            msg (CameraInfo): Incoming CameraInfo message.
-        """
         with self.camera_info_lock:
             if not self.camera_info_received:
                 # Extract camera matrix
@@ -109,28 +71,18 @@ class AprilTagPosePublisher(Node):
                 self.get_logger().info('Camera intrinsic parameters received.')
 
     def detection_callback(self, msg: AprilTagDetectionArray):
-        """
-        Callback function to handle incoming AprilTagDetectionArray messages.
-        Processes each detected AprilTag, estimates its pose, transforms it to the base_link frame,
-        and publishes the transformed PoseStamped message.
-
-        Args:
-            msg (AprilTagDetectionArray): Incoming AprilTag detections.
-        """
         with self.camera_info_lock:
             if not self.camera_info_received:
                 self.get_logger().warn('CameraInfo not received yet. Skipping detection.')
                 return
 
         if not msg.detections:
-            if self.debug:
-                self.get_logger().debug('No AprilTags detected in this frame.')
+            self.get_logger().info('No AprilTags detected in this frame.')
             return
 
         for detection in msg.detections:
             tag_id = detection.id
-            if self.debug:
-                self.get_logger().debug(f'Processing AprilTag ID: {tag_id}')
+            self.get_logger().info(f'Processing AprilTag ID: {tag_id}')
 
             # Extract image points from detection
             img_points = np.array([
@@ -181,8 +133,7 @@ class AprilTagPosePublisher(Node):
 
             # Create PoseStamped message
             pose_msg = PoseStamped()
-            # Initially set header to the camera frame
-            pose_msg.header = msg.header  # frame_id: 'rear_camera_color_optical_frame'
+            pose_msg.header = msg.header  # Use the header from the detection message
 
             # Assign position
             pose_msg.pose.position.x = translation_vector[0][0]
@@ -195,45 +146,16 @@ class AprilTagPosePublisher(Node):
             pose_msg.pose.orientation.z = q_new[2]
             pose_msg.pose.orientation.w = q_new[3]
 
-            if self.debug:
-                self.get_logger().debug(
-                    f'Pose for tag ID {tag_id}: Position({pose_msg.pose.position.x:.2f}, '
-                    f'{pose_msg.pose.position.y:.2f}, {pose_msg.pose.position.z:.2f}) '
-                    f'Orientation({q_new[0]:.2f}, {q_new[1]:.2f}, '
-                    f'{q_new[2]:.2f}, {q_new[3]:.2f})'
-                )
+            self.get_logger().info(
+                f'Pose for tag ID {tag_id}: Position({pose_msg.pose.position.x:.2f}, '
+                f'{pose_msg.pose.position.y:.2f}, {pose_msg.pose.position.z:.2f}) '
+                f'Orientation({q_new[0]:.2f}, {q_new[1]:.2f}, '
+                f'{q_new[2]:.2f}, {q_new[3]:.2f})'
+            )
 
-            # Transform the PoseStamped message to base_link frame
-            try:
-                # Define the target frame
-                target_frame = 'base_link'
-
-                # Perform the transformation
-                transformed_pose = self.tf_buffer.transform(
-                    pose_msg,
-                    target_frame,
-                    timeout=rclpy.duration.Duration(seconds=1.0)
-                )
-
-                # Update the frame_id to base_link
-                transformed_pose.header.frame_id = target_frame
-
-                if self.debug:
-                    yaw = self.get_yaw_from_quaternion(transformed_pose.pose.orientation)
-                    self.get_logger().debug(
-                        f'Transformed Pose for tag ID {tag_id}: Position({transformed_pose.pose.position.x:.2f}, '
-                        f'{transformed_pose.pose.position.y:.2f}, {transformed_pose.pose.position.z:.2f}) '
-                        f'Orientation (yaw)=({yaw:.2f} rad)'
-                    )
-
-                # Publish the transformed pose
-                self.pose_publisher.publish(transformed_pose)
-                if self.debug:
-                    self.get_logger().debug(f'Published transformed PoseStamped for tag ID: {tag_id}')
-
-            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-                self.get_logger().warn(f'Transform failed for tag ID {tag_id}: {e}. Pose not published.')
-                continue
+            # Publish the pose
+            self.pose_publisher.publish(pose_msg)
+            self.get_logger().info(f'Published PoseStamped for tag ID: {tag_id}')
 
 def main(args=None):
     rclpy.init(args=args)
@@ -248,3 +170,4 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+

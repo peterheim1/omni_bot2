@@ -18,7 +18,7 @@ def generate_launch_description():
                 'video_device':"/dev/video0",
                 'image_size': [640,480],
                 'time_per_frame': [1, 15],
-                'camera_frame_id': 'camera_link'
+                'camera_frame_id': 'rear_camera_link'
                 }]
     )
     ])

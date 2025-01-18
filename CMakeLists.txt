@@ -25,11 +25,12 @@ install(PROGRAMS
   scripts/odom.py
   scripts/odom_50hz.py
   scripts/teensy_imu.py
-  scripts/odom_v2.py
+  scripts/docking_node.py
   scripts/dock_pose_pub.py
   scripts/docking_controller.py
   scripts/arm_driver.py
   scripts/voice_serv.py
+  scripts/robot_guiC.py
   
   DESTINATION lib/${PROJECT_NAME}
 )

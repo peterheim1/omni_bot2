@@ -39,35 +39,33 @@ def generate_launch_description():
         ),
         
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([robot_pkg_dir, '/rear_cam_launch.py']),
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/oakCam_launch.py']),
         ),
-        #IncludeLaunchDescription(
-            #PythonLaunchDescriptionSource([robot_pkg_dir, '/rs_launch.py']),
-        #),
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([robot_pkg_dir, '/rsp_launch.py']),
-        ),        
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/rs_launch.py']),
+        ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_pkg_dir, '/rplidar.launch.py']),
         ), 
+        
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/rsp_launch.py']),
+        ), 
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([driver_pkg_dir, '/robot_control_launch.py']),
+        ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_pkg_dir, '/slam_launch.py']),
         ), 
 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([driver_pkg_dir, '/robot_control_launch.py']),
-        ), 
+            PythonLaunchDescriptionSource([robot_pkg_dir, '/april_launch.py']),
+        ),
 
-        #IncludeLaunchDescription(
-            #PythonLaunchDescriptionSource([robot_pkg_dir, '/docking_launch.py']),
-        #),
-
-        #Node(
-            #package='robot_control',
-            #executable='robot_contrl_node',
-            #name='base_driver_cpp',
-            #output='screen'),
+        
 
          Node(
             package="omni_bot2",
@@ -82,6 +80,25 @@ def generate_launch_description():
             package='omni_bot2',
             executable='teensy_imu.py',
             name='imu_publisher',
+            output='screen'),   
+
+        Node(
+            package='omni_bot2',
+            executable='dock_pose_pub.py',
+            name='dock_republisher',
+            output='screen'), 
+
+        Node(
+            package='omni_bot2',
+            executable='docking_node.py',
+            name='auto_dock_node',
+            output='screen'),
+
+       Node(
+            package='omni_bot2',
+            executable='docking_controller.py',
+            name='joy_commander',
             output='screen'),     
-           
-    ])
+
+
+    ])        
