@@ -30,7 +30,7 @@ controller_server:
     controller_frequency: 20.0
     costmap_update_timeout: 0.30
     min_x_velocity_threshold: 0.001
-    min_y_velocity_threshold: 0.5
+    min_y_velocity_threshold: 0.001
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
     progress_checker_plugins: ["progress_checker"]
@@ -218,7 +218,7 @@ global_costmap:
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
+        cost_scaling_factor: 10.0
         inflation_radius: 0.3
       always_send_full_costmap: True
 
@@ -261,7 +261,8 @@ planner_server:
       #lattice_filepath: ""                # The filepath to the state lattice graph
       lookup_table_size: 20.0             # Size of the dubin/reeds-sheep distance window to cache, in meters.
       cache_obstacle_heuristic: false     # Cache the obstacle map dynamic programming distance expansion heuristic between subsequent replannings of the same goal location. Dramatically speeds up replanning performance (40x) if costmap is largely static.
-      allow_reverse_expansion: false      # If true, allows the robot to use the primitives to expand in the mirrored opposite direction of the current robot's orientation (to reverse).
+      allow_reverse_expansion: true     # If true, allows the robot to use the primitives to expand in the mirrored opposite direction of the current robot's orientation (to reverse).
+      debug_visualizations: True         # If true, will publish debug visualization markers
       smooth_path: True                   # If true, does a simple and quick smoothing post-processing to the path
       smoother:
         max_iterations: 1000
@@ -323,10 +324,10 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [0.15, 0.0, 0.2] 
-    min_velocity: [-0.15, 0.0, -0.2]
-    max_accel: [0.3, 0.3, 0.3]
-    max_decel: [-0.3, -0.3, -0.3]
+    max_velocity: [0.15, 0.15, 0.1] 
+    min_velocity: [-0.15, -0.15, -0.1]
+    max_accel: [0.3, 0.3, 0.2]
+    max_decel: [-0.3, -0.3, -0.2]
     odom_topic: "odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
