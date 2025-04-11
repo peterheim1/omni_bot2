@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<robot name="robbie" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="M_SCALE" value="0.001"/>
+  <xacro:property name="C_SCALE" value="0.0034"/>
+  <xacro:include filename="$(find omni_bot2)/urdf/hardware.xacro" />
+  
+    <!-- side reflect parent -->
+  <xacro:macro name="head_macro" params="parent">
+
+    <joint name="pan_joint" type="fixed">
+      <origin rpy="0 0 0" xyz="-0.02 0 0.25"/>
+      <parent link="${parent}"/>
+      <child  link="pan_link"/> 
+    </joint>
+    
+    
+   <link name="pan_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/ax12.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+        </geometry>
+        <xacro:grey1/>
+      </visual>
+    </link>
+
+  <!-- head_pan_joint-->	
+	<joint name="head_yaw_joint" type="revolute">
+    	<parent link="pan_link" />
+    	<child link="head_pan_link" />
+    	<origin xyz="0.0 0 -0.0" rpy="0 0 1.57" />
+        
+    	<axis xyz="0 0 1" />
+    	<limit lower="-1.57" upper="1.57" effort="100" velocity="10" />
+      	<dynamics damping="0.0"/>
+	</joint>
+
+
+  <xacro:my_cylinder name="head_pan_link" l="0.07" r="0.03" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/Grey">		
+      <xacro:cyan1 />
+	</xacro:my_cylinder>
+	
+<xacro:my_cylinder name="ear_link" l="0.1" r="0.01" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/Grey">		
+      <xacro:cyan1 />
+	</xacro:my_cylinder>
+
+
+<!-- head_tilt_servo-->	
+	<joint name="head_tilt_link" type="fixed">
+    	<parent link="head_pan_link" />
+    	<child link="head_tilt_link" />
+    	<origin xyz="-0.0 0 0" rpy="0 0 0" />      
+	</joint>
+     <xacro:ax12 name="head_tilt_link" xyz="0 0 0" rpy="0 0 3.14">
+	 </xacro:ax12>
+
+
+
+<!-- head_roll_joint-->	
+	<joint name="head_roll_joint" type="revolute">
+    	<parent link="head_tilt_link" />
+    	<child link="head_roll_link" />
+    	
+        <origin xyz="0 0 0.01" rpy="0 0 0" />
+    	<axis xyz="0 1 0" />
+    	<limit lower="-0.26" upper="0.26" effort="100" velocity="10" />
+      	<dynamics damping="0.0"/>
+	</joint>
+	
+	<xacro:my_cylinder name="head_roll_link" l="0.01" r="0.01" xyz="0 0 0" rpy="1.57 0 0" mass="0.1" material="Gazebo/Grey">		
+      <xacro:grey1 />
+	</xacro:my_cylinder>
+	
+<!-- assertion error -->
+<joint name="head_pitch_joint" type="revolute">
+    	<parent link="head_roll_link" />
+    	<child link="head_pitch_link" />
+    	
+        <origin xyz="0 0 -0.02" rpy="0 0 -1.57" />
+    	<axis xyz="0 1 0" />
+    	<limit lower="-0.26" upper="0.26" effort="100" velocity="10" />
+      	<dynamics damping="0.0"/>
+	</joint>
+
+
+  <xacro:my_cylinder name="head_pitch_link" l="0.01" r="0.01" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/Grey">		
+      <xacro:cyan1 />
+	</xacro:my_cylinder>
+       
+
+<!-- neck-->	
+	<joint name="neck_link" type="fixed">
+    	<parent link="head_pitch_link" />
+    	<child link="neck" />
+    	<origin xyz="0 0 0.05" rpy="0 0 0" />   
+	</joint>
+
+  <link name="neck" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/gizmo_neck1.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+        <origin xyz="-0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/gizmo_neck1.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+
+<!-- head-->	
+	<joint name="head_link" type="fixed">
+    	<parent link="neck" />
+    	<child link="head" />
+    	<origin xyz="0.1 0 0.05" rpy="0 0 0" />   
+	</joint>
+
+<link name="head" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/bd_head.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="1.57 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+        <origin xyz="-0 0 0" rpy="1.57 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/bd_head.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="right_ant_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/ant_part.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="0 0 0" xyz="-0.09 0.09 0"/>
+    </visual>
+    <collision>
+        <origin xyz="-0.09 0.09 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/ant_part.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="left_ant_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/ant_part.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="0 0 0" xyz="-0.09 -0.09 0"/>
+    </visual>
+    <collision>
+        <origin xyz="-0.09 -0.09 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/ant_part.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <joint name="ear_joint" type="revolute">
+    	<parent link="head" />
+    	<child link="ear_link" />
+    	
+        <origin xyz="-0.15 0 0.0" rpy="1.57 0 0" />
+    	<axis xyz="0 0 1" />
+    	<limit lower="-1.57" upper="1.57" effort="100" velocity="10" />
+      	<dynamics damping="0.0"/>
+	</joint>
+	
+<joint name="right_ant_joint" type="fixed">
+    	<parent link="ear_link" />
+    	<child link="right_ant_link" />
+    	<origin xyz="0.0 0.0 0.0" rpy="-1.57 3.14 0" />   
+	</joint>
+	
+<joint name="left_ant_joint" type="fixed">
+    	<parent link="ear_link" />
+    	<child link="left_ant_link" />
+    	<origin xyz="0.0 0.0 0.0" rpy="-1.57 3.14 0" />   
+	</joint>		
+
+<!-- camera-->	
+	<joint name="camera_link" type="fixed">
+    	<parent link="head" />
+    	<child link="camera_link" />
+    	<origin xyz="0.0 0.0 0.01" rpy="0 0 0" />   
+	</joint>
+
+ <xacro:my_cylinder name="camera_link" l="0.01" r="0.01" xyz="0 0 0" rpy="1.57 0 0" mass="0.1" material="Gazebo/Grey">		
+      <xacro:grey1 />
+	</xacro:my_cylinder>
+
+  </xacro:macro>
+</robot>

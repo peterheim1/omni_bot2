@@ -305,8 +305,8 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [0.15, 0.15, 0.1] 
-    min_velocity: [-0.15, -0.15, -0.1]
+    max_velocity: [0.15, 0.15, 0.05] 
+    min_velocity: [-0.15, -0.15, -0.05]
     max_accel: [0.3, 0.3, 0.1]
     max_decel: [-0.3, -0.3, -0.1]
     odom_topic: "odom"

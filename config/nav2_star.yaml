@@ -27,7 +27,7 @@ bt_navigator:
 
 controller_server:
   ros__parameters:
-    controller_frequency: 20.0
+    controller_frequency: 40.0
     costmap_update_timeout: 0.30
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.001
@@ -124,7 +124,7 @@ controller_server:
         trajectory_point_step: 4
         threshold_to_consider: 0.5
         offset_from_furthest: 20
-        use_path_orientations: false
+        use_path_orientations: true
       PathFollowCritic:
         enabled: true
         cost_power: 1
@@ -253,8 +253,8 @@ planner_server:
       analytic_expansion_max_cost: 200.0  # The maximum single cost for any part of an analytic expansion to contain and be valid, except when necessary on approach to goal
       analytic_expansion_max_cost_override: false  #  Whether or not to override the maximum cost setting if within critical distance to goal (ie probably required)
       reverse_penalty: 2.0                # Penalty to apply if motion is reversing, must be => 1
-      change_penalty: 0.05                # Penalty to apply if motion is changing directions (L to R), must be >= 0
-      non_straight_penalty: 1.05          # Penalty to apply if motion is non-straight, must be => 1
+      change_penalty: 0.2             # Penalty to apply if motion is changing directions (L to R), must be >= 0
+      non_straight_penalty: 1.3          # Penalty to apply if motion is non-straight, must be => 1
       cost_penalty: 2.0                   # Penalty to apply to higher cost areas when adding into the obstacle map dynamic programming distance expansion heuristic. This drives the robot more towards the center of passages. A value between 1.3 - 3.5 is reasonable.
       rotation_penalty: 5.0               # Penalty to apply to in-place rotations, if minimum control set contains them
       retrospective_penalty: 0.015
@@ -305,7 +305,7 @@ behavior_server:
     transform_tolerance: 0.1
     simulate_ahead_time: 2.0
     max_rotational_vel: 0.2
-    min_rotational_vel: 0.05
+    min_rotational_vel: 0.08
     rotational_acc_lim: 1.2
 
 waypoint_follower:
@@ -324,13 +324,13 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [0.15, 0.15, 0.1] 
-    min_velocity: [-0.15, -0.15, -0.1]
-    max_accel: [0.3, 0.3, 0.2]
-    max_decel: [-0.3, -0.3, -0.2]
+    max_velocity: [0.17, 0.17, 0.08] 
+    min_velocity: [-0.17, -0.17, -0.08]
+    max_accel: [0.3, 0.3, 0.1]
+    max_decel: [-0.3, -0.3, -0.1]
     odom_topic: "odom"
     odom_duration: 0.1
-    deadband_velocity: [0.0, 0.0, 0.0]
+    deadband_velocity: [0., 0.0, 0.00]
     velocity_timeout: 1.0
 
 collision_monitor:

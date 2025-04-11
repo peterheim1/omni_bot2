@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<robot name="robbie" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="M_SCALE" value="0.001"/>
+  <xacro:include filename="$(find omni_bot2)/urdf/hardware.xacro" />
+  
+    <!-- side reflect parent -->
+  <xacro:macro name="arm_macro" params="side parent reflect">
+   <!--                            joint 1                                    -->
+   <joint name="${side}_j1_joint" type="revolute">
+    	<parent link="${parent}" />
+    	<child link="${side}_lift" />
+        <origin xyz="0.0 ${reflect * 0.14} 0.27" rpy="0 0 0" />
+    	<axis xyz="1 0 0" />
+    	<limit lower="-1.37" upper="0.0" effort="100" velocity="10" />
+      	<dynamics damping="0.0"/>
+  </joint>
+  <xacro:my_box name="${side}_lift" lwh="0.05 0.02 0.05" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	 <xacro:gold />
+  </xacro:my_box>
+<!--                            joint 2                                    -->
+<joint name="${side}_j2_joint" type="revolute">
+    	<parent link="${side}_lift" />
+    	<child link="${side}_lift1" />
+    	<origin xyz="0.0 ${reflect * 0.04} 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit lower="-1.57" upper="1.57" effort="10" velocity="20" />
+	</joint>
+<xacro:my_sphere name="${side}_lift1" r="0.025" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	 <xacro:gold />
+	 </xacro:my_sphere>
+	 
+<!--                            joint 3                                    -->
+<joint name="${side}_j3_joint" type="revolute">
+    	<parent link="${side}_lift1" />
+    	<child link="${side}_rotate" />
+    	<origin xyz="0.05 0 0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <limit lower="-1.57" upper="1.57" effort="10" velocity="20" />
+	</joint>
+<xacro:my_sphere name="${side}_rotate" r="0.025" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	 <xacro:gold />
+  </xacro:my_sphere>
+  
+  <!--                            joint 4                                    -->
+<joint name="${side}_j4_joint" type="revolute">
+    	<parent link="${side}_rotate" />
+    	<child link="${side}_lift2" />
+    	<origin xyz="0.15 0 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit lower="-1.57" upper="1.57" effort="10" velocity="20" />
+	</joint>
+<xacro:my_sphere name="${side}_lift2" r="0.025" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	 <xacro:gold />
+	 </xacro:my_sphere>
+  
+ <!--                            joint 5                                    -->
+<joint name="${side}_j5_joint" type="revolute">
+    	<parent link="${side}_lift2" />
+    	<child link="${side}_lift3" />
+    	<origin xyz="0.05 0 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit lower="${-PI/1.33}" upper="${PI/1.33}" effort="10" velocity="20" />
+	</joint>
+<xacro:my_sphere name="${side}_lift3" r="0.025" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	 <xacro:gold />
+	 </xacro:my_sphere> 
+  </xacro:macro>  
+  
+  
+</robot>

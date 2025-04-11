@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="robbie_ros2_control" params="name">
+
+    <ros2_control name="${name}" type="system">
+      <hardware>
+        <plugin>arduino_hardware/RRBotSystemPositionOnlyHardware</plugin>
+        <param name="loop_rate">30</param>
+        <param name="device">/dev/arduino-nano</param>
+        <param name="baud_rate">57600</param>
+        <param name="timeout_ms">1000</param>
+        <param name="example_param_hw_start_duration_sec">0</param>
+        <param name="example_param_hw_stop_duration_sec">2.0</param>
+        <param name="example_param_hw_slowdown">2</param>
+      </hardware>
+      
+      <joint name="j0_joint">    
+        <command_interface name="position"/>     
+        <state_interface name="position"/>      
+      </joint>
+      
+      <joint name="left_j1_joint">
+       
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      <joint name="left_j2_joint">
+        
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      <joint name="left_j3_joint">
+        
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      <joint name="left_j4_joint">
+        
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      <joint name="left_j5_joint">
+        
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      <joint name="right_j1_joint">
+        
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      <joint name="right_j2_joint">
+        
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      <joint name="right_j3_joint">
+        
+        <command_interface name="position"/>
+        
+        <state_interface name="position"/>
+        
+       
+      </joint>
+      
+      <joint name="right_j4_joint">        
+        <command_interface name="position"/>        
+        <state_interface name="position"/>              
+      </joint>
+      
+      <joint name="right_j5_joint">       
+        <command_interface name="position"/>        
+        <state_interface name="position"/>               
+      </joint>
+      
+      <joint name="right_gripper_joint">       
+        <command_interface name="position"/>
+        <state_interface name="position"/>       
+      </joint>
+      
+      <joint name="left_gripper_joint">        
+        <command_interface name="position"/>        
+        <state_interface name="position"/>       
+      </joint>
+      
+      <joint name="head_roll_joint">       
+        <command_interface name="position"/>        
+        <state_interface name="position"/>              
+      </joint>
+      
+      <joint name="head_yaw_joint">        
+        <command_interface name="position"/>        
+        <state_interface name="position"/>              
+      </joint>
+      
+      <joint name="head_pitch_joint">        
+        <command_interface name="position"/>        
+        <state_interface name="position"/>              
+      </joint>
+      
+    </ros2_control>
+
+  </xacro:macro>
+
+</robot>

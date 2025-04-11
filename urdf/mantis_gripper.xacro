@@ -1,0 +1,80 @@
+<!-- vis_lecture/xacro/basic5_h.xacro -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="M_SCALE" value="0.001"/>
+  <xacro:include filename="$(find omni_bot2)/urdf/hardware.xacro" />
+  
+    <!-- side reflect parent -->
+  <xacro:macro name="gripper_macro" params="side parent reflect">
+  
+   <joint name="${side}_gripper_joint_base" type="fixed">
+    	<parent link="${parent}" />
+    	<child link="${side}_gripper_base" />  
+        <origin rpy="0 0 0" xyz="0.04 0 0"/>  
+  </joint>
+   <xacro:my_box name="${side}_gripper_base" lwh="0.06 0.03 0.01" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+     <xacro:gold />
+  </xacro:my_box>
+
+
+<joint name="${side}_gripper_joint" type="revolute">
+    	<parent link="${side}_gripper_base" />
+    	<child link="${side}_right_claw" />
+        <origin xyz="0.07 0 0 " rpy="-1.57 -1.57 0" />
+    	<axis xyz="0 0 1" />
+    	<limit lower="-1.3" upper="0.0" effort="10" velocity="10" />
+      	<dynamics damping="0.0"/>
+	</joint>
+
+   <link name="${side}_right_claw" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/claw_3_rr.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:White/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/claw_3_rr.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+
+<joint name="${side}_gripper_finger_joint2" type="fixed">
+    	<parent link="${side}_gripper_base" />
+    	<child link="${side}_left_claw" />
+        <origin xyz="0.07 0 0 " rpy="-1.57 -1.57 0" />
+    	<axis xyz="0 0 1" />
+    	<limit lower="-0.64" upper="0.0" effort="10" velocity="1" />
+        <mimic joint="${side}_right_claw" multiplier="-1" offset="0"/>
+      	<dynamics damping="0.0"/>
+	</joint>
+
+   <link name="${side}_left_claw" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/claw_3_l.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:White/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/claw_3_l.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+
+<!-- Fake gripper link and joint for grasp planning -->
+    <joint name="${side}_gripper_link" type="fixed">
+      <origin xyz="0 0.03 0" rpy="3.14 0 1.57"/>
+      <parent link="${side}_right_claw"/>
+      <child link="${side}_gripper_link"/>
+    </joint>
+    <link name="${side}_gripper_link">
+      
+    </link>
+  </xacro:macro>
+</robot>

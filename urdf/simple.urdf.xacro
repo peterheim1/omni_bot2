@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<robot name="robbie" xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:arg name="use_nominal_extrinsics" default="false"/>
+  <xacro:arg name="add_plug" default="false" />
+  <xacro:arg name="use_mesh" default="true" />
+  <xacro:include filename="$(find omni_bot2)/urdf/simple_arm.xacro" />
+  <xacro:include filename="$(find omni_bot2)/urdf/head.xacro" />
+  <xacro:include filename="$(find omni_bot2)/urdf/hardware.xacro" />
+  <xacro:include filename="$(find omni_bot2)/urdf/mantis_gripper.xacro" />
+  <xacro:include filename="$(find omni_bot2)/urdf/robbie_ros2_control.xacro" />
+  
+<xacro:my_box name="base_footprint" lwh="0.1 0.1 0.005" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	        <xacro:grey2 />
+        </xacro:my_box>
+
+
+  <link name="base_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/omni_base_v2.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/omni_base_v2.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="chest_front_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/Chest_Front1.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/Chest_Front1.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="chest_back_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/Chest_Back1.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/Chest_Back1.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+
+<link name="scanner_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:black/>
+      <origin rpy="0 0 0" xyz="0 -0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <xacro:my_box name="pan" lwh="0.06 0.06 0.02" xyz="0 0 0" rpy="0 0 0" mass="0.1" material="Gazebo/FlatBlack">
+	        <xacro:cyan1 />
+        </xacro:my_box>
+
+<link name="torso_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/torso_base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="0 0 -1.57" xyz="0 0 0"/>
+    </visual>
+    <collision>
+        <origin xyz="-0 0 0" rpy="0 0 -1.57" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/torso_base.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="rear_camera_link" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="1.57 0 1.57" xyz="0 -0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="1.57 0 1.57" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+  
+  <link name="oak" >
+   <visual>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+         <xacro:grey1/>
+      <origin rpy="1.57 0 1.57" xyz="0 -0 0"/>
+    </visual>
+   <collision>
+        <origin xyz="0 0 0" rpy="1.57 0 1.57" />
+        <geometry>
+          <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          </geometry>
+      </collision>
+  </link>
+
+
+<joint name="base_footprint" type="fixed">
+    	<parent link="base_footprint" />
+    	<child link="base_link" />
+    	<origin xyz="0. 0 0.06" rpy="0 0 0" />
+	</joint>
+
+
+<joint name="scanner_link" type="fixed">
+    	<parent link="base_link" />
+    	<child link="scanner_link" />
+    	<origin xyz="0.15 0 0.31" rpy="0 0 0" />
+	</joint> 
+	
+	
+
+<joint name="torso_joint" type="fixed">
+    	<parent link="base_link" />
+    	<child link="torso_link" />
+        <axis xyz="0 0 1"/>
+    	<origin xyz="0.0 0 0.15" rpy="0 0 0" />
+        <limit effort="1000.0" lower="0.2" upper="0.7" velocity="0.5"/>
+</joint> 
+
+
+
+<joint name="j0_joint" type="revolute">
+    	<parent link="torso_link" />
+    	<child link="pan" />
+        <origin xyz="0.0 0 0.57" rpy="0 0 0" />
+    	<axis xyz="0 0 1" />
+    	<limit lower="-1.57" upper="1.57" effort="100" velocity="10" />
+      	<dynamics damping="0.0"/>
+ </joint>
+
+<joint name="chest_front_joint" type="fixed">
+    	<parent link="pan" />
+    	<child link="chest_front_link" />
+        <axis xyz="0 0 1"/>
+    	<origin xyz="0.04 0 0.16" rpy="0 0 0" />
+        <limit effort="1000.0" lower="0.2" upper="0.7" velocity="0.5"/>
+</joint> 
+
+<joint name="chest_back_joint" type="fixed">
+    	<parent link="pan" />
+    	<child link="chest_back_link" />
+        <axis xyz="0 0 1"/>
+    	<origin xyz="-0.04 0 0.18" rpy="0 0 1.57" />
+        <limit effort="1000.0" lower="0.2" upper="0.7" velocity="0.5"/>
+</joint>
+
+<joint name="oak" type="fixed">
+    	<parent link="base_link" />
+    	<child link="oak" />
+    	<origin xyz="0.1 0 0.35" rpy="0 0 0" />
+	</joint> 	
+	
+<joint name="rear_camera_link" type="fixed">
+    	<parent link="base_link" />
+    	<child link="rear_camera_link" />
+    	<origin xyz="-0.10 0 0.35" rpy="0 0 3.14" />
+	</joint> 
+    
+
+
+
+  <xacro:arm_macro side="right" parent="pan" reflect="-1"/>
+  <xacro:arm_macro side="left" parent="pan" reflect="1"/>
+  <xacro:head_macro parent="chest_front_link"/>
+  <xacro:gripper_macro side="right" parent="right_lift3" reflect="-1"/>
+  <xacro:gripper_macro side="left" parent="left_lift3" reflect="1"/>
+  <xacro:robbie_ros2_control name="robbie_ros2_control" />
+ 
+  
+ 
+</robot>

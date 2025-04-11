@@ -109,7 +109,7 @@
 			<visual>
 				<origin xyz="${xyz}" rpy="${rpy}" />
 				<geometry>
-					<mesh filename="package://2/mesh/ax12.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+					<mesh filename="package://omni_bot2/mesh/ax12.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
 				</geometry>
 				<xacro:ax12_color />
              </visual>
