@@ -1,0 +1,529 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="dual_arm_robot">
+
+  <!-- === Global Materials === -->
+  <material name="blue">
+    <color rgba="0 0 1 1"/>
+  </material>
+  <material name="red">
+    <color rgba="1 0 0 1"/>
+  </material>
+  <material name="gray">
+    <color rgba="0.5 0.5 0.5 1"/>
+  </material>
+  <material name="yellow">
+    <color rgba="1 1 0 1"/>
+  </material>
+  <!-- Add black / grey1 if not defined -->
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="grey1">
+    <color rgba="0.2 0.2 0.2 1"/>
+  </material>
+
+  <!-- Example scale property if needed -->
+  <xacro:property name="M_SCALE" value="0.001"/>
+
+  <!-- === Arm Segment Lengths === -->
+  <xacro:property name="link1_length" value="0.03"/>
+  <xacro:property name="link2_length" value="0.03"/>
+  <xacro:property name="link3_length" value="0.07"/>
+  <xacro:property name="link4_length" value="0.1"/>
+  <xacro:property name="link5_length" value="0.03"/>
+  <xacro:property name="link6_length" value="0.05"/>
+  <xacro:property name="joint_limit" value="${pi / 2}"/>
+  
+  <!-- base_footprint below base_link for odom publisher -->
+  <link name="base_footprint"/>
+  <joint name="base_footprint" type="fixed">
+    	<parent link="base_footprint" />
+    	<child link="base_link" />
+    	<origin xyz="0. 0 0.06" rpy="0 0 0" />
+	</joint>
+
+  <!-- === Base (yellow) === -->
+  <link name="base_link">
+    <!-- Visual -->
+    <visual>
+      <geometry>
+        <box size="0.4 0.4 0.25"/>
+      </geometry>
+      <origin xyz="0 0 0.125" rpy="0 0 0"/>
+      <material name="yellow"/>
+    </visual>
+    <!-- Collision -->
+    <collision>
+      <geometry>
+        <box size="0.4 0.4 0.25"/>
+      </geometry>
+      <origin xyz="0 0 0.125" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <!-- Torso joint -->
+  <joint name="torso_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="torso_link"/>
+    <origin xyz="0 0 0.42" rpy="0 0 0"/>
+  </joint>
+
+  <!-- === Torso (yellow) === -->
+  <link name="torso_link">
+    <!-- Visual -->
+    <visual>
+      <geometry>
+        <box size="0.15 0.15 0.45"/>
+      </geometry>
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+      <material name="yellow"/>
+    </visual>
+    <!-- Collision -->
+    <collision>
+      <geometry>
+        <box size="0.15 0.15 0.45"/>
+      </geometry>
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <!-- === Head Pan/tilt Joints === -->
+  <joint name="head_pan_joint" type="revolute">
+    <parent link="torso_link"/>
+    <child link="head_pan"/>
+    <origin xyz="0 0 0.0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-${joint_limit}" upper="${joint_limit}" effort="1" velocity="1.0"/>
+  </joint>
+
+  <link name="head_pan">
+    <!-- Visual -->
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.02"/>
+      </geometry>
+      <origin xyz="0 0 0.29" rpy="0 0 0"/>
+      <material name="red"/>
+    </visual>
+    <!-- Collision -->
+    <collision>
+      <geometry>
+        <cylinder length="0.05" radius="0.02"/>
+      </geometry>
+      <origin xyz="0 0 0.29" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <joint name="head_tilt_joint" type="revolute">
+    <parent link="head_pan"/>
+    <child link="head_tilt"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-${joint_limit}" upper="${joint_limit}" effort="1" velocity="1.0"/>
+  </joint>
+
+  <link name="head_tilt">
+    <!-- optional visual/collision if desired. Currently empty. -->
+  </link>
+
+  <!-- === Head box link (0.24 x 0.19 x 0.08, color gray) === -->
+  <joint name="head_box_joint" type="fixed">
+    <parent link="head_tilt"/>
+    <child link="head_box"/>
+    <origin xyz="0 0 0.3" rpy="0 0 0"/>
+  </joint>
+
+  <link name="head_box">
+    <!-- Visual -->
+    <visual>
+      <geometry>
+        <box size="0.24 0.19 0.08"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="gray"/>
+    </visual>
+    <!-- Collision -->
+    <collision>
+      <geometry>
+        <box size="0.24 0.19 0.08"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <!-- === Camera Frame 'oak' on top of the head === -->
+  <joint name="oak_joint" type="fixed">
+    <parent link="head_box"/>
+    <child link="oak"/>
+    <!-- place at top center: half of 0.08 => 0.04 up from center -->
+    <origin xyz="0 0 0.04" rpy="0 0 0"/>
+  </joint>
+
+  <link name="oak">
+    <!-- For now, no geometry. Just a frame.  -->
+  </link>
+
+  <!-- === Ears (two pivoting boxes) === -->
+  <!-- Left Ear -->
+  <joint name="ear_left_joint" type="revolute">
+    <parent link="head_box"/>
+    <child link="ear_left"/>
+    <origin xyz="0 0.09 0.04" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.0" upper="1.0" effort="1" velocity="1.0"/>
+  </joint>
+
+  <link name="ear_left">
+    <visual>
+      <geometry>
+        <box size="0.03 0.005 0.18"/>
+      </geometry>
+      <origin xyz="0 0 0.09" rpy="0 0 0"/>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 0.005 0.18"/>
+      </geometry>
+      <origin xyz="0 0 0.09" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <!-- Right Ear -->
+  <joint name="ear_right_joint" type="revolute">
+    <parent link="head_box"/>
+    <child link="ear_right"/>
+    <origin xyz="0 -0.09 0.04" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.0" upper="1.0" effort="1" velocity="1.0"/>
+  </joint>
+
+  <link name="ear_right">
+    <visual>
+      <geometry>
+        <box size="0.03 0.005 0.18"/>
+      </geometry>
+      <origin xyz="0 0 0.09" rpy="0 0 0"/>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 0.005 0.18"/>
+      </geometry>
+      <origin xyz="0 0 0.09" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <!-- === 6-DOF Arm Macro (with collision) === -->
+  <xacro:macro name="arm" params="prefix side x_offset">
+
+    <!-- Joint 1: Shoulder Pitch -->
+    <joint name="${prefix}joint_1" type="revolute">
+      <parent link="torso_link"/>
+      <child link="${prefix}link_1"/>
+      <origin xyz="0 ${0.1 if side == 'left' else -0.1} 0.28" rpy="0 1.5708 0"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="-${joint_limit}" upper="${joint_limit}" effort="1" velocity="1.0"/>
+    </joint>
+
+    <link name="${prefix}link_1">
+      <visual>
+        <geometry>
+          <cylinder length="${link1_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link1_length/2}" rpy="0 0 0"/>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${link1_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link1_length/2}" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <!-- Joint 2: Shoulder Roll -->
+    <joint name="${prefix}joint_2" type="revolute">
+      <parent link="${prefix}link_1"/>
+      <child link="${prefix}link_2"/>
+      <origin xyz="0 0 ${link1_length}" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-${joint_limit}" upper="${joint_limit}" effort="1" velocity="1.0"/>
+    </joint>
+
+    <link name="${prefix}link_2">
+      <visual>
+        <geometry>
+          <cylinder length="${link2_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link2_length/2}" rpy="0 0 0"/>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${link2_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link2_length/2}" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <!-- Joint 3: Shoulder Yaw -->
+    <joint name="${prefix}joint_3" type="revolute">
+      <parent link="${prefix}link_2"/>
+      <child link="${prefix}link_3"/>
+      <origin xyz="0 0 ${link2_length}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-${joint_limit}" upper="${joint_limit}" effort="1" velocity="1.0"/>
+    </joint>
+
+    <link name="${prefix}link_3">
+      <visual>
+        <geometry>
+          <cylinder length="${link3_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link3_length/2}" rpy="0 0 0"/>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${link3_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link3_length/2}" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <!-- Joint 4: Elbow Pitch -->
+    <joint name="${prefix}joint_4" type="revolute">
+      <parent link="${prefix}link_3"/>
+      <child link="${prefix}link_4"/>
+      <origin xyz="0 0 ${link3_length}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="-1.70" upper="0.0" effort="1" velocity="1.0"/>
+    </joint>
+
+    <link name="${prefix}link_4">
+      <visual>
+        <geometry>
+          <cylinder length="${link4_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link4_length/2}" rpy="0 0 0"/>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${link4_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link4_length/2}" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <!-- Joint 5: Wrist Yaw -->
+    <joint name="${prefix}joint_5" type="revolute">
+      <parent link="${prefix}link_4"/>
+      <child link="${prefix}link_5"/>
+      <origin xyz="0 0 ${link4_length}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-${joint_limit}" upper="${joint_limit}" effort="1" velocity="1.0"/>
+    </joint>
+
+    <link name="${prefix}link_5">
+      <visual>
+        <geometry>
+          <cylinder length="${link5_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link5_length/2}" rpy="0 0 0"/>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${link5_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link5_length/2}" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <!-- Joint 6: Wrist Pitch -->
+    <joint name="${prefix}joint_6" type="revolute">
+      <parent link="${prefix}link_5"/>
+      <child link="${prefix}link_6"/>
+      <origin xyz="0 0 ${link5_length}" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-${joint_limit}" upper="${joint_limit}" effort="1" velocity="1.0"/>
+    </joint>
+
+    <link name="${prefix}link_6">
+      <visual>
+        <geometry>
+          <cylinder length="${link6_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link6_length/2}" rpy="0 0 0"/>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${link6_length}" radius="0.02"/>
+        </geometry>
+        <origin xyz="0 0 ${link6_length/2}" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <!-- End Effector -->
+    <joint name="${prefix}ee_fixed_joint" type="fixed">
+      <parent link="${prefix}link_6"/>
+      <child link="${prefix}end_effector"/>
+      <origin xyz="0 0 ${link6_length}" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${prefix}end_effector">
+      <visual>
+        <!-- a small box for the tool, oriented along Z as well -->
+        <geometry>
+          <box size="0.02 0.02 0.02"/>
+        </geometry>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <material name="red"/>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.02 0.02 0.02"/>
+        </geometry>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      </collision>
+    </link>
+    
+    <!-- ____________________________________ gripper_______________________________________-->
+<joint name="${prefix}_arm_link2" type="fixed">
+    	<parent link="${prefix}end_effector" />
+    	<child link="${prefix}_arm_link2" />       
+    	<origin xyz="0.0 0.0 0.04" rpy="1.57 0 0" />
+        <limit effort="1000.0" lower="0.2" upper="0.7" velocity="0.5"/>
+</joint> 
+
+<link name="${prefix}_arm_link2">
+    <!-- Visual -->
+    <visual>
+      <geometry>
+        <box size="0.03 0.025 0.037"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="yellow"/>
+    </visual>
+    <!-- Collision -->
+    <collision>
+      <geometry>
+        <box size="0.03 0.025 0.037"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+
+<joint name="${prefix}_gripper" type="prismatic">
+    	<parent link="${prefix}_arm_link2" />
+    	<child link="${prefix}_jaw1" />
+    	<origin xyz="0.02 0.02 0.0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <limit lower="-0.02" upper="0.01" effort="10" velocity="1.0" />
+	</joint> 
+<link name="${prefix}_jaw1">
+    <!-- Visual -->
+    <visual>
+      <geometry>
+        <box size="0.01 0.025 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="black"/>
+    </visual>
+    <!-- Collision -->
+    <collision>
+      <geometry>
+        <box size="0.01 0.025 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+
+<joint name="${prefix}_gripper2" type="prismatic">
+    	<parent link="${prefix}_arm_link2" />
+    	<child link="${prefix}_jaw2" />
+    	<origin xyz="-0.02 0.02 0.0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <mimic joint="${prefix}_gripper" multiplier="-1" offset="0"/>   
+        <limit lower="-0.01" upper="0.01" effort="10" velocity="1.0" />
+	</joint> 
+
+<link name="${prefix}_jaw2">
+    <!-- Visual -->
+    <visual>
+      <geometry>
+        <box size="0.01 0.025 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="black"/>
+    </visual>
+    <!-- Collision -->
+    <collision>
+      <geometry>
+        <box size="0.01 0.025 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+  </xacro:macro>
+
+  <!-- === Left and Right Arms === -->
+  <xacro:arm prefix="left_"  side="left"  x_offset="0.0"/>
+  <xacro:arm prefix="right_" side="right" x_offset="0.0"/>
+
+  <!-- ======================================= -->
+  <!-- ADDITIONAL SENSORS REQUESTED           -->
+  <!-- ======================================= -->
+
+  <!-- Scanner -->
+  <link name="scanner_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/X4.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="scanner_link_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="scanner_link" />
+    <origin xyz="0.15 0 0.27" rpy="0 0 0" />
+  </joint>
+
+  <!-- Rear Camera -->
+  <link name="rear_camera_link">
+    <visual>
+      <origin rpy="1.57 0 1.57" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+      <material name="grey1"/>
+    </visual>
+    <collision>
+      <origin rpy="1.57 0 1.57" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://omni_bot2/mesh/d435.stl" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="rear_camera_link_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="rear_camera_link" />
+    <origin xyz="-0.10 0 0.35" rpy="0 0 3.14" />
+  </joint>
+
+</robot>

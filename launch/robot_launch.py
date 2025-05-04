@@ -94,11 +94,16 @@ def generate_launch_description():
             name='auto_dock_node',
             output='screen'),
 
-       Node(
+        Node(
             package='omni_bot2',
             executable='docking_controller.py',
             name='joy_commander',
             output='screen'),     
 
+        Node(
+            package='omni_bot2',
+            executable='torso_joint.py',
+            name='arm_controller',
+            output='screen'),  
 
     ])        

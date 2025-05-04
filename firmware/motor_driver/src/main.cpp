@@ -153,7 +153,8 @@ void loop() {
     currentPos2 = (stpD.rawAngle() * AS5600_RAW_TO_DEGREES)- (176);
 
     TCA9548(I2CC);
-    currentPos3 = (stpC.rawAngle() * AS5600_RAW_TO_DEGREES)- (175);
+    currentPos3 = (stpC.rawAngle() * AS5600_RAW_TO_DEGREES)- (184);
+    currentPos3 = currentPos3 *-1;
     
     v0 = RequestData(4);
     v1 = RequestData(5);
@@ -259,6 +260,20 @@ void OnMessageCompleted() {
   e1 = _Messenger.readInt();
   e2 = _Messenger.readInt();
   e3 = _Messenger.readInt();
+  // Read current positions from AS5600 sensors
+  TCA9548(I2CB);
+  currentPos0 = (stpB.rawAngle() * AS5600_RAW_TO_DEGREES)- (129);
+
+  TCA9548(I2CA);
+  currentPos1 = (stpA.rawAngle() * AS5600_RAW_TO_DEGREES)- (170);
+  //currentPos1 = currentPos1 *-1;
+
+  TCA9548(I2CD);
+  currentPos2 = (stpD.rawAngle() * AS5600_RAW_TO_DEGREES)- (176);
+
+  TCA9548(I2CC);
+  currentPos3 = (stpC.rawAngle() * AS5600_RAW_TO_DEGREES)- (175);
+  currentPos3 = currentPos3 *-1;
   md0 = (S0 - currentPos0) * stepsPerDegree;
   md1 = (S1 - currentPos1) * stepsPerDegree;
   md2 = (S2 - currentPos2) * stepsPerDegree;
